@@ -18,6 +18,6 @@ BEGIN
     VALUES(p_user_id, SYSTIMESTAMP, p_mensagem);
     
     EXCEPTION
-        WHEN e_usuario_nao_existe THEN RAISE_APPLICATION_ERROR(-20003, 'Erro ao inserir log: Usuario nao encontrado.');
+        WHEN e_usuario_nao_existe THEN RAISE_APPLICATION_ERROR(-20001, 'Usuario nao encontrado.');
 END;
 /

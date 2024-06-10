@@ -64,7 +64,38 @@ BEGIN
     RETURN v_user_id;
     
     EXCEPTION
-        WHEN NO_DATA_FOUND THEN RAISE_APPLICATION_ERROR(-20001, 'Acesso negado: Usuario nao encontrado.');
-        WHEN e_senha_invalida THEN RAISE_APPLICATION_ERROR(-20002, 'Acesso negado: Senha invalida.');
+        WHEN NO_DATA_FOUND THEN RAISE_APPLICATION_ERROR(-20001, 'Usuario nao encontrado.');
+        WHEN e_senha_invalida THEN RAISE_APPLICATION_ERROR(-20002, 'Senha invalida.');
+END;
+/
+
+/* Funcaoo para obter o cargo de um usuario/lider */
+CREATE OR REPLACE FUNCTION FUNC_BUSCA_CARGO_USUARIO(
+    p_id_lider USERS.ID_LIDER%TYPE
+) RETURN LIDER.CARGO%TYPE AS
+    v_cargo_usuario LIDER.CARGO%TYPE;
+BEGIN
+    SELECT CARGO INTO v_cargo_usuario
+    FROM LIDER
+    WHERE CPI = p_id_lider;
+    
+    RETURN v_cargo_usuario;
+    
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN RAISE_APPLICATION_ERROR(-20001, 'Usuario nao encontrado.');
+END;
+/
+
+/* Funcao para verificar se um usuario eh um lider de faccao (esta associado a uma faccao cadastrada) */
+CREATE OR REPLACE FUNCTION FUNC_VALIDA_LIDER_FACCAO(
+    p_id_lider USERS.ID_LIDER%TYPE
+) RETURN NUMBER AS
+    v_eh_lider_faccao NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO v_eh_lider_faccao
+    FROM FACCAO
+    WHERE LIDER = p_id_lider;
+
+    RETURN v_eh_lider_faccao;
 END;
 /
