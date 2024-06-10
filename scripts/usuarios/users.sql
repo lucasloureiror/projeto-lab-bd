@@ -43,25 +43,28 @@ BEGIN
 END;
 /
 
-/* Funcao para validar um usuario */
+/* Funcao para validar um usuario: retorna o USER_ID caso o usuario seja valido */
 CREATE OR REPLACE FUNCTION FUNC_VALIDA_USUARIO(
     p_id_lider LIDER.CPI%TYPE,
     p_senha USERS.PASSWORD%TYPE
-) RETURN NUMBER AS
-    v_senha VARCHAR2(32);
+) RETURN USERS.USER_ID%TYPE AS
+    v_user_id USERS.USER_ID%TYPE;
+    v_senha USERS.PASSWORD%TYPE;
     e_senha_invalida EXCEPTION;
 BEGIN
-    SELECT PASSWORD INTO v_senha FROM USERS
+    SELECT USER_ID, PASSWORD
+    INTO v_user_id, v_senha 
+    FROM USERS
     WHERE ID_LIDER = p_id_lider;
     
     IF v_senha <> PASSWORD_MD5(p_senha) THEN
         RAISE e_senha_invalida;
     END IF;
     
-    RETURN 1;
+    RETURN v_user_id;
     
     EXCEPTION
-        WHEN NO_DATA_FOUND THEN RAISE_APPLICATION_ERROR(-20001, 'Acesso negado: usuario nao encontrado.');
-        WHEN e_senha_invalida THEN RAISE_APPLICATION_ERROR(-20002, 'Acesso negado: senha invalida.');
+        WHEN NO_DATA_FOUND THEN RAISE_APPLICATION_ERROR(-20001, 'Acesso negado: Usuario nao encontrado.');
+        WHEN e_senha_invalida THEN RAISE_APPLICATION_ERROR(-20002, 'Acesso negado: Senha invalida.');
 END;
 /
