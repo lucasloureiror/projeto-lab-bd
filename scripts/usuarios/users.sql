@@ -32,6 +32,7 @@ BEGIN
         IF v_qtd_usuarios = 0 THEN
             INSERT INTO USERS(USER_ID, PASSWORD, ID_LIDER)
             VALUES(SEQ_USER_ID.NEXTVAL, PASSWORD_MD5(p_senha_padrao), v_lider.CPI);
+            COMMIT;
         END IF;
     END LOOP;
 END;
