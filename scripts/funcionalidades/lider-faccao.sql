@@ -1,0 +1,174 @@
+/* Funcionalidades de gerenciamento do Lider de Faccao:
+ * a. Alterar o nome da propria faccao da qual eh lider
+ * b. Indicar um novo lider para a propria faccao (deve perder acesso as funcionalidades)
+ * c. Credenciar comunidades novas que habitem planetas dominados por nacoes onde a propria faccao esta presente
+ * d. Remover faccao de nacao (NacaoFaccao)
+ * */
+ 
+CREATE OR REPLACE PACKAGE PAC_FUNC_LIDER_FACCAO AS
+
+    PROCEDURE alterar_nome_faccao(p_id_lider LIDER.CPI%TYPE);
+    PROCEDURE indicar_novo_lider(p_id_novo_lider LIDER.CPI%TYPE, p_id_lider_atual LIDER.CPI%TYPE);
+    PROCEDURE credenciar_nova_comunidade(p_nome_especie ESPECIE.NOME%TYPE, p_nome_comunidade COMUNIDADE.NOME%TYPE, p_id_lider LIDER.CPI%TYPE);
+    PROCEDURE remover_faccao_de_nacao(p_nome_faccao FACCAO.NOME%TYPE, p_nome_nacao NACAO.NOME%TYPE);
+
+END PAC_FUNC_LIDER_FACCAO;
+/
+
+-- View para auxiliar no credenciamento de comunidades novas que habitem planetas dominados por nacoes onde a faccao esta presente.
+CREATE OR REPLACE VIEW VIEW_COMUNIDADE_CREDENCIADA AS
+SELECT f.NOME AS FACCAO,
+    nf.NACAO AS NACAO_ASSOCIADA,
+    d.PLANETA AS PLANETA_DOMINADO,
+    h.ESPECIE AS ESPECIE_HABITA,
+    h.COMUNIDADE AS COMUNIDADE_HABITA,
+    CASE
+        WHEN EXISTS(
+            SELECT 1 FROM PARTICIPA
+            WHERE FACCAO = f.NOME
+            AND ESPECIE = h.ESPECIE
+            AND COMUNIDADE = h.COMUNIDADE
+        )
+        THEN 'SIM' 
+        ELSE 'NAO' 
+    END AS COMUNIDADE_CREDENCIADA
+FROM FACCAO f
+JOIN NACAO_FACCAO nf
+    ON nf.FACCAO = f.NOME
+JOIN (
+    SELECT PLANETA, NACAO
+    FROM DOMINANCIA
+    WHERE DATA_INI <= SYSDATE
+    AND DATA_FIM IS NULL OR DATA_FIM >= SYSDATE
+) d ON d.NACAO = nf.NACAO
+JOIN (
+    SELECT PLANETA, ESPECIE, COMUNIDADE
+    FROM HABITACAO
+    WHERE DATA_INI <= SYSDATE
+    AND DATA_FIM IS NULL OR DATA_FIM >= SYSDATE
+) h ON h.PLANETA = d.PLANETA
+ORDER BY FACCAO;
+
+/* Trigger que sera executado ao inves do INSERT na view, para que seja possivel credenciar uma comunidade nova */
+CREATE OR REPLACE TRIGGER TRIG_CREDENCIAR_COMUNIDADE
+INSTEAD OF INSERT ON VIEW_COMUNIDADE_CREDENCIADA
+FOR EACH ROW
+DECLARE
+    v_comunidade_valida NUMBER;
+    e_comunidade_invalida EXCEPTION;
+BEGIN
+    -- Verificar se a comunidade habita um planeta dominado por uma nacao associada a faccao
+    SELECT COUNT(*) INTO v_comunidade_valida
+    FROM VIEW_COMUNIDADE_CREDENCIADA
+    WHERE FACCAO = :new.FACCAO
+    AND ESPECIE_HABITA = :new.ESPECIE_HABITA
+    AND COMUNIDADE_HABITA = :new.COMUNIDADE_HABITA;
+    
+    -- Se a comunidade nao for valida, lancar uma excecao
+    IF v_comunidade_valida = 0 THEN
+        RAISE e_comunidade_invalida;
+    END IF;
+    
+    -- Se a comunidade for valida, credenciar sua participacao na faccao
+    INSERT INTO PARTICIPA(FACCAO, ESPECIE, COMUNIDADE)
+    VALUES(:new.FACCAO, :new.ESPECIE_HABITA, :new.COMUNIDADE_HABITA);
+    
+    EXCEPTION
+        WHEN DUP_VAL_ON_INDEX THEN
+            RAISE_APPLICATION_ERROR(-20003, 'Comunidade ja credenciada na sua faccao, altere a comunidade e tente novamente.');
+        WHEN e_comunidade_invalida THEN
+            RAISE_APPLICATION_ERROR(-20005, 'Somente comunidades que habitam um planeta dominado por uma nacao associada a sua faccao podem ser credenciadas.');
+END TRIG_CREDENCIAR_COMUNIDADE;
+/
+
+CREATE OR REPLACE PACKAGE BODY PAC_FUNC_LIDER_FACCAO AS
+
+    /* Funcao privada: buscar a faccao de um lider */
+    FUNCTION buscar_propria_faccao(p_id_lider LIDER.CPI%TYPE)
+    RETURN FACCAO.NOME%TYPE AS
+        v_nome_faccao FACCAO.NOME%TYPE;
+    BEGIN
+        SELECT NOME INTO v_nome_faccao
+        FROM FACCAO
+        WHERE LIDER = p_id_lider;
+        
+        RETURN v_nome_faccao;
+    
+        EXCEPTION
+            WHEN NO_DATA_FOUND THEN RAISE_APPLICATION_ERROR(-20001, 'Lider de faccao nao encontrado.');
+    END buscar_propria_faccao;
+    
+    /* Funcao privada: verifica se uma comunidade existe */
+    FUNCTION comunidade_existe(p_nome_especie ESPECIE.NOME%TYPE, p_nome_comunidade COMUNIDADE.NOME%TYPE)
+    RETURN BOOLEAN AS
+        v_qtd_comunidades_encontradas NUMBER;
+    BEGIN
+        SELECT COUNT(*) INTO v_qtd_comunidades_encontradas
+        FROM COMUNIDADE
+        WHERE NOME = p_nome_comunidade
+        AND ESPECIE = p_nome_especie;
+        
+        RETURN v_qtd_comunidades_encontradas > 0;
+    END comunidade_existe;
+
+    /* Procedimento publico: Alterar o nome da propria faccao da qual eh lider */
+    PROCEDURE alterar_nome_faccao(p_id_lider LIDER.CPI%TYPE) AS
+    BEGIN
+        DBMS_OUTPUT.PUT_LINE('alterar_nome_faccao');
+    END alterar_nome_faccao;
+    
+    /* Procedimento publico: Indicar um novo lider para a propria faccao (deve perder acesso as funcionalidades) */
+    PROCEDURE indicar_novo_lider(p_id_novo_lider LIDER.CPI%TYPE, p_id_lider_atual LIDER.CPI%TYPE) AS
+    BEGIN
+        DBMS_OUTPUT.PUT_LINE('indicar_novo_lider');
+    END indicar_novo_lider;
+    
+    /* Procedimento publico: Credenciar comunidades novas que habitem planetas dominados por nacoes onde a propria faccao esta presente */
+    PROCEDURE credenciar_nova_comunidade(p_nome_especie ESPECIE.NOME%TYPE, p_nome_comunidade COMUNIDADE.NOME%TYPE, p_id_lider LIDER.CPI%TYPE) AS
+        v_nome_faccao_lider FACCAO.NOME%TYPE;
+        e_comunidade_nao_informada EXCEPTION;
+        e_comunidade_nao_existe EXCEPTION;
+    BEGIN
+        v_nome_faccao_lider := BUSCAR_PROPRIA_FACCAO(p_id_lider);
+        
+        -- Verificar se a comunidade foi informada
+        IF p_nome_especie IS NULL OR p_nome_comunidade IS NULL THEN 
+            RAISE e_comunidade_nao_informada;
+        END IF;
+        
+        -- Verificar se a comunidade existe
+        IF COMUNIDADE_EXISTE(p_nome_especie, p_nome_comunidade) = FALSE THEN
+            RAISE e_comunidade_nao_existe;
+        END IF;
+        
+        INSERT INTO VIEW_COMUNIDADE_CREDENCIADA(FACCAO, ESPECIE_HABITA, COMUNIDADE_HABITA)
+        VALUES(v_nome_faccao_lider, p_nome_especie, p_nome_comunidade);
+        COMMIT;
+        
+        EXCEPTION
+            WHEN e_comunidade_nao_informada THEN
+                RAISE_APPLICATION_ERROR(-20004, 'Os atributos "ESPECIE" e "COMUNIDADE" nao podem ser nulos.');
+            WHEN e_comunidade_nao_existe THEN
+                RAISE_APPLICATION_ERROR(-20001, 'Comunidade nao encontrada.');
+    END credenciar_nova_comunidade;
+    
+    /* Procedimento publico: Remover faccao de nacao (NacaoFaccao) */
+    PROCEDURE remover_faccao_de_nacao(p_nome_faccao FACCAO.NOME%TYPE, p_nome_nacao NACAO.NOME%TYPE) AS
+        e_nacao_faccao_nao_existe EXCEPTION;
+    BEGIN
+        DELETE FROM NACAO_FACCAO
+        WHERE NACAO = p_nome_nacao
+        AND FACCAO = p_nome_faccao;
+        
+        IF SQL%NOTFOUND THEN
+            RAISE e_nacao_faccao_nao_existe;
+        END IF;
+        
+        COMMIT;
+
+        EXCEPTION
+            WHEN e_nacao_faccao_nao_existe THEN RAISE_APPLICATION_ERROR(-20001, 'Associacao de nacao-faccao nao encontrada.');
+    END remover_faccao_de_nacao;
+
+END PAC_FUNC_LIDER_FACCAO;
+/

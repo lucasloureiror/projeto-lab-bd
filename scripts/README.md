@@ -5,6 +5,9 @@ Para criar o esquema do banco do zero, ou seja, para criar todas as tabelas, seq
 2. `insercao.sql`
 3. `users.sql`
 4. `log.sql`
+5. `cientista.sql`
+6. `comandante.sql`
+7. `lider-faccao.sql`
 
 
 # Remoção do banco
@@ -69,6 +72,8 @@ Os seguintes procedimentos foram desenvolvidos no banco e podem ser utilizados p
 Os seguintes pacotes foram desenvolvidos no banco e podem ser utilizados pela aplicação:
 1. `PAC_FUNC_CIENTISTA`: Pacote que incluí todas as funcionalidades de gerenciamento para usuários do tipo 'Cientista'.
 2. `PAC_FUNC_COMANDANTE`: Pacote que incluí todas as funcionalidades de gerenciamento para usuários do tipo 'Comandante'.
+3. `PAC_FUNC_LIDER_FACCAO`: Pacote que incluí todas as funcionalidades de gerenciamento para usuários do tipo 'Líder de Facção'.
+
 
 ## PAC_FUNC_CIENTISTA
 Inclui as seguintes funções/procedimentos:
@@ -78,7 +83,6 @@ Inclui as seguintes funções/procedimentos:
 4. `remover_estrela(p_id_estrela)`
 
 ### 1. CRIAR_ESTRELA
-
 - **Implementação**: `cientista.sql`
 - **Parâmetros**: `p_estrela ESTRELA`
 - **Descrição**: Recebe um objeto do tipo estrela e o insere na tabela *ESTRELA*.
@@ -89,7 +93,6 @@ Inclui as seguintes funções/procedimentos:
     3. `ORA-20004` - Os atributos "ID_ESTRELA", "X", "Y" e "Z" não podem ser nulos.
 
 ### 2. BUSCAR_ESTRELA
-
 - **Implementação**: `cientista.sql`
 - **Parâmetros**: `p_id_estrela VARCHAR2(31)`
 - **Retorno**: `p_estrela ESTRELA`
@@ -98,7 +101,6 @@ Inclui as seguintes funções/procedimentos:
 - **Exceções**: `ORA-20001` - Estrela não encontrada.
 
 ### 3. ATUALIZAR_ESTRELA
-
 - **Implementação**: `cientista.sql`
 - **Parâmetros**: `p_estrela ESTRELA`
 - **Descrição**: Recebe um objeto do tipo estrela e o atualiza na tabela *ESTRELA* com base no id do objeto.
@@ -108,12 +110,12 @@ Inclui as seguintes funções/procedimentos:
     2. `ORA-20004` - Os atributos "ID_ESTRELA", "X", "Y" e "Z" não podem ser nulos.
 
 ### 4. REMOVER_ESTRELA
-
 - **Implementação**: `cientista.sql`
 - **Parâmetros**: `p_id_estrela VARCHAR2(31)`
 - **Descrição**: Recebe um id de estrela e a remove da tabela *ESTRELA*.
 - **Objetivo**: Permitir que os usuários do tipo 'Cientista' possam remover estrelas pelo id na base de dados.
 - **Exceções**: `ORA-20001` - Estrela não encontrada.
+
 
 ## PAC_FUNC_COMANDANTE
 Inclui as seguintes funções/procedimentos:
@@ -123,7 +125,6 @@ Inclui as seguintes funções/procedimentos:
 4. `inserir_dominancia(p_id_planeta, p_data_ini, p_id_lider)`
 
 ### 1. INCLUIR_PROPRIA_NACAO
-
 - **Implementação**: `comandante.sql`
 - **Parâmetros**: `p_nome_federacao VARCHAR2(15)`, `p_id_lider CHAR(14)`
 - **Descrição**: Recebe o nome de uma federação existente e o CPI do líder. Busca a nação do líder, verifica se ela já não está inclusa na federação em questão ou em alguma outra federação, e então atualiza a tabela *NACAO* para incluir a nação do líder na federação especificada.
@@ -135,7 +136,6 @@ Inclui as seguintes funções/procedimentos:
     4. `ORA-20005` - Sua nação está atualmente incluída na federação "[nome-federacao]". Exclua essa associação e tente novamente.
 
 ### 2. EXCLUIR_PROPRIA_NACAO
-
 - **Implementação**: `comandante.sql`
 - **Parâmetros**: `p_nome_federacao VARCHAR2(15)`, `p_id_lider CHAR(14)`
 - **Descrição**: Recebe o nome de uma federação existente e o CPI do líder. Busca a nação do líder, verifica se ela está de fato inclusa na federação em questão, e então atualiza a tabela *NACAO* para excluir a nação do líder da federação especificada. Também excluí a federação em questão da tabela *FEDERACAO*, caso ela não esteja mais associada a nenhuma nação.
@@ -146,7 +146,6 @@ Inclui as seguintes funções/procedimentos:
     3. `ORA-20005` - Sua nação não está incluída na federação "[nome-federacao]".
 
 ### 3. CRIAR_FEDERACAO
-
 - **Implementação**: `comandante.sql`
 - **Parâmetros**: `p_federacao FEDERACAO`, `p_id_lider CHAR(14)`
 - **Descrição**: Recebe um objeto do tipo federação e o CPI do líder. Busca a nação do líder, verifica se ela já não está associada a uma federação, e então cria a nova federação na tabela *FEDERACAO*. Em seguida, atualiza a tabela *NACAO* para associar a nação do líder à federação criada.
@@ -158,7 +157,6 @@ Inclui as seguintes funções/procedimentos:
     4. `ORA-20005` - Sua nação está atualmente incluída na federação "[nome-federacao]". Exclua essa associação e tente novamente.
 
 ### 4. INSERIR_DOMINANCIA
-
 - **Implementação**: `comandante.sql`
 - **Parâmetros**: `p_id_planeta VARCHAR2(15)`, `p_data_ini DATE`, `p_id_lider CHAR(14)`
 - **Descrição**: Recebe o id de um planeta, uma data de início e o CPI do líder. Busca a nação do líder, verifica se o planeta não está sendo dominado por ninguém atualmente e então insere a nova dominância.
@@ -169,3 +167,44 @@ Inclui as seguintes funções/procedimentos:
     3. `ORA-20004` - Os atributos "PLANETA", "NACAO" e "DATA_INI" não podem ser nulos.
     4. `ORA-20005` - Esse planeta já esta sendo dominado.
 
+
+## PAC_FUNC_LIDER_FACCAO
+Inclui as seguintes funções/procedimentos:
+1. `alterar_nome_faccao(p_id_lider)`
+2. `indicar_novo_lider(p_id_novo_lider, p_id_lider_atual)`
+3. `credenciar_nova_comunidade(p_nome_especie, p_nome_comunidade, p_id_lider)`
+4. `remover_faccao_de_nacao(p_nome_faccao, p_nome_nacao)`
+
+### 1. ALTERAR_NOME_FACCAO
+- **Implementação**: `lider-faccao.sql`
+- **Parâmetros**: `p_id_lider CHAR(14)`
+- **Descrição**: 
+- **Objetivo**: Permitir que os usuários do tipo 'Líder de Facção' possam alterar o nome da própria facção.
+- **Exceções**:
+
+### 2. INDICAR_NOVO_LIDER
+- **Implementação**: `lider-faccao.sql`
+- **Parâmetros**: `p_id_novo_lider CHAR(14)`, `p_id_lider_atual CHAR(14)`
+- **Descrição**: 
+- **Objetivo**: Permitir que os usuários do tipo 'Líder de Facção' possam indicar um novo líder para a própria facção.
+- **Exceções**:
+
+### 3. CREDENCIAR_NOVA_COMUNIDADE
+- **Implementação**: `lider-faccao.sql`
+- **Parâmetros**: `p_nome_especie VARCHAR2(15)`, `p_nome_comunidade VARCHAR2(15)`, `p_id_lider CHAR(14)`
+- **Descrição**: Recebe o nome da espécie e da comunidade que será credenciada, assim como o id do líder. Busca a facção do líder, verifica se os nomes de espécie e comunidade informados não são nulos, verifica se a comunidade existe e então insere a participação da comunidade na facção do líder através da view `VIEW_COMUNIDADE_CREDENCIADA`.
+- **Objetivo**: Permitir que os usuários do tipo 'Líder de Facção' possam credenciar comunidades novas que habitem planetas dominados por nações onde a própria facção está presente.
+- **Triggers**: Desencadeia o trigger `TRIG_CREDENCIAR_COMUNIDADE` ao realizar um *INSERT* na view `VIEW_COMUNIDADE_CREDENCIADA`.
+- **Exceções**:
+    1. `ORA-20001` - Líder de facção não encontrado.
+    2. `ORA-20001` - Comunidade não encontrada.
+    3. `ORA-20003` - Comunidade já credenciada na sua facção, altere a comunidade e tente novamente.
+    4. `ORA-20004` - Os atributos "ESPECIE" e "COMUNIDADE" não podem ser nulos.
+    5. `ORA-20005` - Somente comunidades que habitam um planeta dominado por uma nação associada à sua facção podem ser credenciadas.
+
+### 4. REMOVER_FACCAO_DE_NACAO
+- **Implementação**: `lider-faccao.sql`
+- **Parâmetros**: `p_nome_faccao VARCHAR2(15)`, `p_nome_nacao VARCHAR2(15)`
+- **Descrição**: Recebe o nome de uma facção e de uma nação e remove a associação entre a nação e facção em questão da tabela *NACAO_FACCAO*.
+- **Objetivo**: Permitir que os usuários do tipo 'Líder de Facção' possam remover facções de nações.
+- **Exceções**: `ORA-20001` - Associação de nação-facção não encontrada.
