@@ -23,7 +23,7 @@ As seguintes exceções foram definidas pelo banco no desenvolvimento de algumas
 # Funções disponíveis
 As seguintes funções foram desenvolvidas no banco e podem ser utilizadas pela aplicação:
 - `FUNC_VALIDA_USUARIO(p_id_lider, p_senha): NUMBER`
-- `FUNC_OBTER_CARGO_USUARIO(p_id_lider): CHAR(10)`
+- `FUNC_BUSCA_CARGO_USUARIO(p_id_lider): CHAR(10)`
 - `FUNC_VALIDA_LIDER_FACCAO(p_id_lider): NUMBER`
 
 ### FUNC_VALIDA_USUARIO
