@@ -27,16 +27,16 @@ INSERT INTO ORBITA_PLANETA VALUES ('Jupiter', 'E001', 954.7, 1025.2, 4329);
 INSERT INTO ORBITA_PLANETA VALUES ('Saturno', 'E001', 1647.6, 1669.9, 8928);
 
 -- ESPECIE --
-INSERT INTO ESPECIE VALUES ('Humano', 'Terra', 'V');
-INSERT INTO ESPECIE VALUES ('Marciano', 'Marte', 'V');
+INSERT INTO ESPECIE VALUES ('Humanos', 'Terra', 'V');
+INSERT INTO ESPECIE VALUES ('Marcianos', 'Marte', 'V');
 
 -- COMUNIDADE --
-INSERT INTO COMUNIDADE VALUES('Humano', 'Cidade Estelar', 1000000);
-INSERT INTO COMUNIDADE VALUES('Marciano', 'Refugio Aurora', 500000);
+INSERT INTO COMUNIDADE VALUES('Humanos', 'Cidade Estelar', 1000000);
+INSERT INTO COMUNIDADE VALUES('Marcianos', 'Refugio Aurora', 500000);
 
 -- HABITACAO --
-INSERT INTO HABITACAO VALUES('Terra', 'Humano', 'Cidade Estelar', TO_DATE('01-01-2024', 'DD-MM-YYYY'), NULL);
-INSERT INTO HABITACAO VALUES('Marte', 'Marciano', 'Refugio Aurora', TO_DATE('12-12-2012', 'DD-MM-YYYY'), NULL);
+INSERT INTO HABITACAO VALUES('Terra', 'Humanos', 'Cidade Estelar', TO_DATE('01-01-2024', 'DD-MM-YYYY'), NULL);
+INSERT INTO HABITACAO VALUES('Marte', 'Marcianos', 'Refugio Aurora', TO_DATE('12-12-2012', 'DD-MM-YYYY'), NULL);
 
 -- FEDERACAO --
 INSERT INTO FEDERACAO VALUES('Alianca Solar', TO_DATE('01/01/2011', 'DD/MM/YYYY'));
@@ -51,8 +51,8 @@ INSERT INTO DOMINANCIA VALUES('Marte', 'Frota Marciana', TO_DATE('12-12-2012', '
 INSERT INTO DOMINANCIA VALUES('Jupiter', 'Frota Marciana', TO_DATE('03-05-2024', 'DD-MM-YYYY'), NULL);
 
 -- LIDER --
-INSERT INTO LIDER VALUES('912.148.763-26', 'Jack ONeill', 'COMANDANTE', 'Uniao Terraquea', 'Humano');
-INSERT INTO LIDER VALUES('687.897.454-65', 'Dr. Zarnak', 'CIENTISTA', 'Frota Marciana', 'Marciano');
+INSERT INTO LIDER VALUES('912.148.763-26', 'Jack ONeill', 'COMANDANTE', 'Uniao Terraquea', 'Humanos');
+INSERT INTO LIDER VALUES('687.897.454-65', 'Dr. Zarnak', 'CIENTISTA', 'Frota Marciana', 'Marcianos');
 
 -- FACCAO --
 INSERT INTO FACCAO VALUES('Exploradores', '912.148.763-26', 'PROGRESSISTA', 1);	
@@ -63,7 +63,7 @@ INSERT INTO NACAO_FACCAO VALUES('Uniao Terraquea', 'Exploradores');
 INSERT INTO NACAO_FACCAO VALUES('Frota Marciana', 'Resistencia');
 
 -- PARTICIPA --
-INSERT INTO PARTICIPA VALUES('Exploradores', 'Humano', 'Cidade Estelar');
-INSERT INTO PARTICIPA VALUES('Resistencia', 'Marciano', 'Refugio Aurora');
+INSERT INTO PARTICIPA VALUES('Exploradores', 'Humanos', 'Cidade Estelar');
+INSERT INTO PARTICIPA VALUES('Resistencia', 'Marcianos', 'Refugio Aurora');
 
 COMMIT;
