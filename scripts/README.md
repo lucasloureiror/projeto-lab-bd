@@ -5,9 +5,11 @@ Para criar o esquema do banco do zero, ou seja, para criar todas as tabelas, seq
 2. `insercao.sql`
 3. `users.sql`
 4. `log.sql`
-5. `cientista.sql`
-6. `comandante.sql`
-7. `lider-faccao.sql`
+5. `views.sql`
+6. `triggers.sql`
+7. `cientista.sql`
+8. `comandante.sql`
+9. `lider-faccao.sql`
 
 
 # Remoção do banco
