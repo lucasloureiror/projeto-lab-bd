@@ -170,17 +170,19 @@ Inclui as seguintes funções/procedimentos:
 
 ## PAC_FUNC_LIDER_FACCAO
 Inclui as seguintes funções/procedimentos:
-1. `alterar_nome_faccao(p_id_lider)`
+1. `alterar_nome_faccao(p_novo_nome_faccao, p_id_lider)`
 2. `indicar_novo_lider(p_id_novo_lider, p_id_lider_atual)`
 3. `credenciar_nova_comunidade(p_nome_especie, p_nome_comunidade, p_id_lider)`
 4. `remover_faccao_de_nacao(p_nome_faccao, p_nome_nacao)`
 
 ### 1. ALTERAR_NOME_FACCAO
 - **Implementação**: `lider-faccao.sql`
-- **Parâmetros**: `p_id_lider CHAR(14)`
-- **Descrição**: 
+- **Parâmetros**: `p_novo_nome_faccao VARCHAR(15)`, `p_id_lider CHAR(14)`
+- **Descrição**: Recebe o novo nome que a facção deverá ter e o id do líder. Busca a facção do líder e verifica se o novo nome é diferente do nome atual da facção. Caso seja, remove todas as nações associadas e todas as comunidades credenciadas na nação em questão (para que seja possível atualizar o nome), atualiza o nome da facção e então insere novamente todas as nações associadas e comunidades credenciadas com o novo nome.
 - **Objetivo**: Permitir que os usuários do tipo 'Líder de Facção' possam alterar o nome da própria facção.
 - **Exceções**:
+    1. `ORA-20001` - Líder de facção não encontrado.
+    2. `ORA-20005` - O novo nome da facção deve ser diferente do nome atual.
 
 ### 2. INDICAR_NOVO_LIDER
 - **Implementação**: `lider-faccao.sql`

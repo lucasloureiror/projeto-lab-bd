@@ -7,7 +7,7 @@
  
 CREATE OR REPLACE PACKAGE PAC_FUNC_LIDER_FACCAO AS
 
-    PROCEDURE alterar_nome_faccao(p_id_lider LIDER.CPI%TYPE);
+    PROCEDURE alterar_nome_faccao(p_novo_nome_faccao FACCAO.NOME%TYPE, p_id_lider LIDER.CPI%TYPE);
     PROCEDURE indicar_novo_lider(p_id_novo_lider LIDER.CPI%TYPE, p_id_lider_atual LIDER.CPI%TYPE);
     PROCEDURE credenciar_nova_comunidade(p_nome_especie ESPECIE.NOME%TYPE, p_nome_comunidade COMUNIDADE.NOME%TYPE, p_id_lider LIDER.CPI%TYPE);
     PROCEDURE remover_faccao_de_nacao(p_nome_faccao FACCAO.NOME%TYPE, p_nome_nacao NACAO.NOME%TYPE);
@@ -82,39 +82,52 @@ END TRIG_CREDENCIAR_COMUNIDADE;
 /
 
 CREATE OR REPLACE PACKAGE BODY PAC_FUNC_LIDER_FACCAO AS
+    /* Declaracao de atributos privados */
+    TYPE tab_nome_nacao IS TABLE OF NACAO_FACCAO.NACAO%TYPE;
+    TYPE tab_comunidade IS TABLE OF COMUNIDADE%ROWTYPE;
 
-    /* Funcao privada: buscar a faccao de um lider */
-    FUNCTION buscar_propria_faccao(p_id_lider LIDER.CPI%TYPE)
-    RETURN FACCAO.NOME%TYPE AS
-        v_nome_faccao FACCAO.NOME%TYPE;
-    BEGIN
-        SELECT NOME INTO v_nome_faccao
-        FROM FACCAO
-        WHERE LIDER = p_id_lider;
-        
-        RETURN v_nome_faccao;
-    
-        EXCEPTION
-            WHEN NO_DATA_FOUND THEN RAISE_APPLICATION_ERROR(-20001, 'Lider de faccao nao encontrado.');
-    END buscar_propria_faccao;
-    
-    /* Funcao privada: verifica se uma comunidade existe */
-    FUNCTION comunidade_existe(p_nome_especie ESPECIE.NOME%TYPE, p_nome_comunidade COMUNIDADE.NOME%TYPE)
-    RETURN BOOLEAN AS
-        v_qtd_comunidades_encontradas NUMBER;
-    BEGIN
-        SELECT COUNT(*) INTO v_qtd_comunidades_encontradas
-        FROM COMUNIDADE
-        WHERE NOME = p_nome_comunidade
-        AND ESPECIE = p_nome_especie;
-        
-        RETURN v_qtd_comunidades_encontradas > 0;
-    END comunidade_existe;
+    /* Declaracao de funcoes/procedimentos privados */
+    FUNCTION buscar_propria_faccao(p_id_lider LIDER.CPI%TYPE) RETURN FACCAO.NOME%TYPE;
+    FUNCTION comunidade_existe(p_nome_especie ESPECIE.NOME%TYPE, p_nome_comunidade COMUNIDADE.NOME%TYPE) RETURN BOOLEAN;
+    FUNCTION obter_nacoes_associadas(p_nome_faccao FACCAO.NOME%TYPE) RETURN TAB_NOME_NACAO;
+    FUNCTION obter_comunidades_credenciadas(p_nome_faccao FACCAO.NOME%TYPE) RETURN TAB_COMUNIDADE;
+    PROCEDURE associar_nacoes(p_nome_faccao FACCAO.NOME%TYPE, col_nacoes TAB_NOME_NACAO);
+    PROCEDURE credenciar_comunidades(p_nome_faccao FACCAO.NOME%TYPE, col_comunidades TAB_COMUNIDADE);
 
     /* Procedimento publico: Alterar o nome da propria faccao da qual eh lider */
-    PROCEDURE alterar_nome_faccao(p_id_lider LIDER.CPI%TYPE) AS
+    PROCEDURE alterar_nome_faccao(p_novo_nome_faccao FACCAO.NOME%TYPE, p_id_lider LIDER.CPI%TYPE) AS
+        v_nome_faccao_lider FACCAO.NOME%TYPE;
+        col_nacoes_associadas TAB_NOME_NACAO;
+        col_comunidades_credenciadas TAB_COMUNIDADE;
+        e_novo_nome_igual_atual EXCEPTION;
     BEGIN
-        DBMS_OUTPUT.PUT_LINE('alterar_nome_faccao');
+        v_nome_faccao_lider := BUSCAR_PROPRIA_FACCAO(p_id_lider);
+        
+        IF v_nome_faccao_lider = p_novo_nome_faccao THEN
+            RAISE e_novo_nome_igual_atual;
+        END IF;
+        
+        -- Obter o nome das nacoes associadas e as comunidades credenciadas na faccao do lider
+        col_nacoes_associadas := OBTER_NACOES_ASSOCIADAS(v_nome_faccao_lider);
+        col_comunidades_credenciadas := OBTER_COMUNIDADES_CREDENCIADAS(v_nome_faccao_lider);
+        
+        -- Remover as nacoes associadas e as comunidades credenciadas para que seja possivel alterar o nome da faccao
+        DELETE FROM NACAO_FACCAO WHERE FACCAO = v_nome_faccao_lider;
+        DELETE FROM PARTICIPA WHERE FACCAO = v_nome_faccao_lider;
+        
+        -- Atualizar o nome da faccao do lider
+        UPDATE FACCAO
+        SET NOME = p_novo_nome_faccao
+        WHERE NOME = v_nome_faccao_lider;
+        
+        -- Associar as nacoes e credenciar as comunidades novamente, usando o novo nome da faccao
+        associar_nacoes(p_novo_nome_faccao, col_nacoes_associadas);
+        credenciar_comunidades(p_novo_nome_faccao, col_comunidades_credenciadas);
+        
+        COMMIT;
+        
+        EXCEPTION
+            WHEN e_novo_nome_igual_atual THEN RAISE_APPLICATION_ERROR(-20005, 'O novo nome da faccao deve ser diferente do nome atual.');
     END alterar_nome_faccao;
     
     /* Procedimento publico: Indicar um novo lider para a propria faccao (deve perder acesso as funcionalidades) */
@@ -169,6 +182,85 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_LIDER_FACCAO AS
         EXCEPTION
             WHEN e_nacao_faccao_nao_existe THEN RAISE_APPLICATION_ERROR(-20001, 'Associacao de nacao-faccao nao encontrada.');
     END remover_faccao_de_nacao;
+
+    /* Funcao privada: buscar a faccao de um lider */
+    FUNCTION buscar_propria_faccao(p_id_lider LIDER.CPI%TYPE)
+    RETURN FACCAO.NOME%TYPE AS
+        v_nome_faccao FACCAO.NOME%TYPE;
+    BEGIN
+        SELECT NOME INTO v_nome_faccao
+        FROM FACCAO
+        WHERE LIDER = p_id_lider;
+        
+        RETURN v_nome_faccao;
+    
+        EXCEPTION
+            WHEN NO_DATA_FOUND THEN RAISE_APPLICATION_ERROR(-20001, 'Lider de faccao nao encontrado.');
+    END buscar_propria_faccao;
+    
+    /* Funcao privada: verifica se uma comunidade existe */
+    FUNCTION comunidade_existe(p_nome_especie ESPECIE.NOME%TYPE, p_nome_comunidade COMUNIDADE.NOME%TYPE)
+    RETURN BOOLEAN AS
+        v_qtd_comunidades_encontradas NUMBER;
+    BEGIN
+        SELECT COUNT(*) INTO v_qtd_comunidades_encontradas
+        FROM COMUNIDADE
+        WHERE NOME = p_nome_comunidade
+        AND ESPECIE = p_nome_especie;
+        
+        RETURN v_qtd_comunidades_encontradas > 0;
+    END comunidade_existe;
+    
+    /* Funcao privada: Obter uma colecao contendo o nome de todas as nacoes associadas a uma faccao */
+    FUNCTION obter_nacoes_associadas(p_nome_faccao FACCAO.NOME%TYPE)
+    RETURN TAB_NOME_NACAO AS
+        col_nacoes TAB_NOME_NACAO := tab_nome_nacao();
+        v_indice NUMBER := 0;
+    BEGIN
+        FOR v_nacao_faccao IN (SELECT * FROM NACAO_FACCAO WHERE FACCAO = p_nome_faccao)
+        LOOP
+            col_nacoes.extend();
+            v_indice := v_indice + 1;
+            col_nacoes(v_indice) := v_nacao_faccao.NACAO;
+        END LOOP;
+        
+        RETURN col_nacoes;
+    END obter_nacoes_associadas;
+    
+    /* Funcao privada: Obter uma colecao contendo todas as comunidades credenciadas em uma faccao */
+    FUNCTION obter_comunidades_credenciadas(p_nome_faccao FACCAO.NOME%TYPE)
+    RETURN TAB_COMUNIDADE AS
+        col_comunidades TAB_COMUNIDADE := tab_comunidade();
+        v_indice NUMBER := 0;
+    BEGIN
+        FOR v_participa IN (SELECT * FROM PARTICIPA WHERE FACCAO = p_nome_faccao)
+        LOOP
+            col_comunidades.extend();
+            v_indice := v_indice + 1;
+            col_comunidades(v_indice).NOME := v_participa.COMUNIDADE;
+            col_comunidades(v_indice).ESPECIE := v_participa.ESPECIE;
+        END LOOP;
+    
+        RETURN col_comunidades;
+    END obter_comunidades_credenciadas;
+    
+    /* Procedimento privado: Associar uma colecao de nacoes com uma faccao */
+    PROCEDURE associar_nacoes(p_nome_faccao FACCAO.NOME%TYPE, col_nacoes TAB_NOME_NACAO) AS
+    BEGIN
+        FOR i IN col_nacoes.FIRST..col_nacoes.LAST LOOP
+            INSERT INTO NACAO_FACCAO(NACAO, FACCAO)
+            VALUES(col_nacoes(i), p_nome_faccao);
+        END LOOP;
+    END associar_nacoes;
+
+    /* Procedimento privado: Associar uma colecao de nacoes com uma faccao */
+    PROCEDURE credenciar_comunidades(p_nome_faccao FACCAO.NOME%TYPE, col_comunidades TAB_COMUNIDADE) AS
+    BEGIN
+        FOR i IN col_comunidades.FIRST..col_comunidades.LAST LOOP
+            INSERT INTO PARTICIPA(FACCAO, ESPECIE, COMUNIDADE)
+            VALUES(p_nome_faccao, col_comunidades(i).ESPECIE, col_comunidades(i).NOME);
+        END LOOP;
+    END credenciar_comunidades;
 
 END PAC_FUNC_LIDER_FACCAO;
 /
