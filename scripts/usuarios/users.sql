@@ -10,7 +10,8 @@ CREATE TABLE USERS(
 
 /* Sequencia para criacao do ID sintetico */
 CREATE SEQUENCE SEQ_USER_ID
-START WITH 1 INCREMENT BY 1;
+START WITH 1 INCREMENT BY 1
+NOCACHE NOCYCLE ;
 
 /* Utilizacao da funcao MD5 do SGBD para armazenar os dados do atributo PASSWORD */
 CREATE OR REPLACE FUNCTION PASSWORD_MD5(p_senha VARCHAR2)
@@ -32,6 +33,7 @@ BEGIN
         IF v_qtd_usuarios = 0 THEN
             INSERT INTO USERS(USER_ID, PASSWORD, ID_LIDER)
             VALUES(SEQ_USER_ID.NEXTVAL, PASSWORD_MD5(p_senha_padrao), v_lider.CPI);
+            COMMIT;
         END IF;
     END LOOP;
 END;
