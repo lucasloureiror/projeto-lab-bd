@@ -181,6 +181,7 @@ Inclui as seguintes funções/procedimentos:
 - **Implementação**: `lider-faccao.sql`
 - **Parâmetros**: `p_novo_nome_faccao VARCHAR(15)`, `p_id_lider CHAR(14)`
 - **Descrição**: Recebe o novo nome que a facção deverá ter e o id do líder. Busca a facção do líder e verifica se o novo nome é diferente do nome atual da facção. Caso seja, remove todas as nações associadas e todas as comunidades credenciadas na nação em questão (para que seja possível atualizar o nome), atualiza o nome da facção e então insere novamente todas as nações associadas e comunidades credenciadas com o novo nome.
+- **Triggers**: Desencadeia o compound trigger `TRIG_ALTERAR_NOME_FACCAO` ao realizar o *UPDATE* do nome na tabela *FACCAO*.
 - **Objetivo**: Permitir que os usuários do tipo 'Líder de Facção' possam alterar o nome da própria facção.
 - **Exceções**:
     1. `ORA-20001` - Líder de facção não encontrado.
@@ -216,7 +217,7 @@ Inclui as seguintes funções/procedimentos:
 - **Parâmetros**: `p_nome_faccao VARCHAR2(15)`, `p_nome_nacao VARCHAR2(15)`
 - **Descrição**: Recebe o nome de uma facção e de uma nação e remove a associação entre a nação e facção em questão da tabela *NACAO_FACCAO*. Também ajusta a quantidade de nações da facção em questão na tabela *FACCAO*.
 - **Objetivo**: Permitir que os usuários do tipo 'Líder de Facção' possam remover facções de nações.
-- **Triggers**: Desencadeia o trigger `TRIG_REMOVER_NACAO_FACCAO` ao realizar o *DELETE* na tabela *NACAO_FACCAO*.
 - **Exceções**:
-    1. `ORA-20001` - Associação de nação-facção não encontrada.
-    2. `ORA-20005` - O líder da facção "[nome-faccao]" pertence a nação "[nome-nacao]" e, portanto, tal facção nao pode ser removida dessa nação.
+    1. `ORA-20001` - Facção não encontrada. 
+    2. `ORA-20001` - Associação de nação-facção não encontrada.
+    3. `ORA-20005` - O líder da facção "[nome-faccao]" pertence a nação "[nome-nacao]" e, portanto, tal facção nao pode ser removida dessa nação.

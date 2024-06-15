@@ -67,31 +67,70 @@ BEGIN
 END TRIG_VALIDA_NACAO_NOVO_LIDER;
 /
 
--- Trigger para impedir a remocao na tabela NACAO_FACCAO quando isso causa a dissociacao da faccao com a nacao de seu lider
-CREATE OR REPLACE TRIGGER TRIG_REMOVER_NACAO_FACCAO
-BEFORE DELETE ON NACAO_FACCAO
-FOR EACH ROW
-DECLARE
-    v_lider_faccao LIDER.CPI%TYPE;
-    v_nacao_lider LIDER.NACAO%TYPE;
-    v_nacao_faccao_critica NUMBER;
-BEGIN
-    -- Obter o CPI do lider da faccao
-    SELECT LIDER INTO v_lider_faccao
-    FROM FACCAO
-    WHERE NOME = :old.FACCAO;
-
-    -- Obter o nome da nacao a qual o lider da faccao pertence
-    SELECT NACAO INTO v_nacao_lider
-    FROM LIDER
-    WHERE CPI = v_lider_faccao;
+-- Compound trigger para permitir que o nome da faccao (PRIMARY KEY) seja modificado
+/* OBS.: Isso deve ser feito porque o Oracle nao possui ON UPDATE CASCADE, entao ele impede uma PK de ser modificada quando existem registros filhos em outras tabelas (FKs que referenciam a PK de faccao). */
+CREATE OR REPLACE TRIGGER TRIG_ALTERAR_NOME_FACCAO
+FOR UPDATE ON FACCAO
+WHEN (old.NOME <> new.NOME)
+COMPOUND TRIGGER
+    TYPE tab_nome_nacao IS TABLE OF NACAO_FACCAO.NACAO%TYPE;
+    TYPE tab_comunidade IS TABLE OF COMUNIDADE%ROWTYPE;
+    col_nacoes_assoc TAB_NOME_NACAO := tab_nome_nacao();
+    col_comunidades_cred TAB_COMUNIDADE := tab_comunidade();
     
-    -- Se a nacao da NACAO_FACCAO que sera removida for a nacao do lider, lancar uma excecao
-    IF :old.NACAO = v_nacao_lider THEN
-        RAISE_APPLICATION_ERROR(-20005, 'O lider da faccao "' || :old.FACCAO || '" pertence a nacao "' || :old.NACAO
-        || '" e, portanto, tal faccao nao pode ser removida dessa nacao.');
-    END IF;
+    BEFORE EACH ROW IS
+        v_indice NUMBER := 0;
+    BEGIN
+        -- Armazenar o nome de todas as nacoes associadas a faccao
+        FOR v_nacao_faccao IN (
+            SELECT NACAO, FACCAO
+            FROM NACAO_FACCAO
+            WHERE FACCAO = :old.NOME
+        ) LOOP
+            col_nacoes_assoc.extend();
+            v_indice := v_indice + 1;
+            col_nacoes_assoc(v_indice) := v_nacao_faccao.NACAO;
+        END LOOP;
 
-END TRIG_REMOVER_NACAO_FACCAO;
-/
+        -- Remover todas as nacoes associadas para que seja possivel alterar o nome da faccao
+        DELETE FROM NACAO_FACCAO
+        WHERE FACCAO = :old.NOME;
+        
+        v_indice := 0; -- Resetar o indice
+        
+        -- Armazenar o nome e a especie de todas as comunidades credenciadas na faccao
+        FOR v_participa IN (
+            SELECT FACCAO, ESPECIE, COMUNIDADE
+            FROM PARTICIPA
+            WHERE FACCAO = :old.NOME
+        ) LOOP
+            col_comunidades_cred.extend();
+            v_indice := v_indice + 1;
+            col_comunidades_cred(v_indice).NOME := v_participa.COMUNIDADE;
+            col_comunidades_cred(v_indice).ESPECIE := v_participa.ESPECIE;
+        END LOOP;
+        
+        -- Remover todas as comunidades credenciadas para que seja possivel alterar o nome da faccao        
+        DELETE FROM PARTICIPA
+        WHERE FACCAO = :old.NOME;
+
+    END BEFORE EACH ROW;
+
+    AFTER EACH ROW IS
+    BEGIN
+        -- Associar todas as nacoes novamente, usando o novo nome da faccao
+        FOR i IN col_nacoes_assoc.FIRST..col_nacoes_assoc.LAST LOOP
+            INSERT INTO NACAO_FACCAO(NACAO, FACCAO)
+            VALUES(col_nacoes_assoc(i), :new.NOME);
+        END LOOP;
+
+        -- Credenciar todas as comunidades novamente, usando o novo nome da faccao
+        FOR i IN col_comunidades_cred.FIRST..col_comunidades_cred.LAST LOOP
+            INSERT INTO PARTICIPA(FACCAO, ESPECIE, COMUNIDADE)
+            VALUES(:new.NOME, col_comunidades_cred(i).ESPECIE, col_comunidades_cred(i).NOME);
+        END LOOP;
+        
+    END AFTER EACH ROW;
+
+END TRIG_ALTERAR_NOME_FACCAO;
 
