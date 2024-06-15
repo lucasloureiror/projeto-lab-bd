@@ -18,7 +18,7 @@ async def read_root(request: Request):
 async def handle_form(request: Request, username: str = Form(...), password: str = Form(...)):
     
     resultado = await repository.connection.check_credentials(username, password)
-    if resultado:
+    if isinstance(resultado, int) and resultado > 0:
         return templates.TemplateResponse("index.html", {"request": request, "message": "Login realizado com sucesso"})
     else:
-        return templates.TemplateResponse("index.html", {"request": request, "message": "Login não foi realizado"})
+        return templates.TemplateResponse("index.html", {"request": request, "message": resultado})
