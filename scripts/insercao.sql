@@ -53,6 +53,8 @@ INSERT INTO DOMINANCIA VALUES('Jupiter', 'Frota Marciana', TO_DATE('03-05-2024',
 -- LIDER --
 INSERT INTO LIDER VALUES('912.148.763-26', 'Jack ONeill', 'COMANDANTE', 'Uniao Terraquea', 'Humanos');
 INSERT INTO LIDER VALUES('687.897.454-65', 'Dr. Zarnak', 'CIENTISTA', 'Frota Marciana', 'Marcianos');
+INSERT INTO LIDER VALUES('123.456.789-10', 'Samantha Carter', 'OFICIAL', 'Uniao Terraquea', 'Humanos');
+INSERT INTO LIDER VALUES('109.876.543-21', 'Daniel Jackson', 'OFICIAL', 'Uniao Terraquea', 'Humanos');
 
 -- FACCAO --
 INSERT INTO FACCAO VALUES('Exploradores', '912.148.763-26', 'PROGRESSISTA', 1);	
