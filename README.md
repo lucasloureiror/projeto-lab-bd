@@ -17,3 +17,4 @@ A documentação interna completa pode ser encontrada [aqui](/scripts/README.md)
 - Pacotes disponíveis
     - [**`PAC_FUNC_CIENTISTA`**](/scripts/README.md#pac_func_cientista)
     - [**`PAC_FUNC_COMANDANTE`**](/scripts/README.md#pac_func_comandante)
+    - [**`PAC_FUNC_LIDER_FACCAO`**](/scripts/README.md#pac_func_lider_faccao)

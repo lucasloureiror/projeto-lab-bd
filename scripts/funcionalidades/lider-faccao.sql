@@ -66,8 +66,20 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_LIDER_FACCAO AS
     
     /* Procedimento publico: Indicar um novo lider para a propria faccao (deve perder acesso as funcionalidades) */
     PROCEDURE indicar_novo_lider(p_id_novo_lider LIDER.CPI%TYPE, p_id_lider_atual LIDER.CPI%TYPE) AS
+        v_nome_faccao_lider FACCAO.NOME%TYPE;
+        e_atualizar_para_null EXCEPTION;
+        PRAGMA EXCEPTION_INIT(e_atualizar_para_null, -1407);
     BEGIN
-        DBMS_OUTPUT.PUT_LINE('indicar_novo_lider');
+        v_nome_faccao_lider := BUSCAR_PROPRIA_FACCAO(p_id_lider_atual);
+    
+        UPDATE FACCAO
+        SET LIDER = p_id_novo_lider
+        WHERE NOME = v_nome_faccao_lider;
+        
+        COMMIT;
+        
+        EXCEPTION
+            WHEN e_atualizar_para_null THEN RAISE_APPLICATION_ERROR(-20004, 'O atributo "LIDER" nao pode ser nulo. Indique o CPI do novo lider e tente novamente.');
     END indicar_novo_lider;
     
     /* Procedimento publico: Credenciar comunidades novas que habitem planetas dominados por nacoes onde a propria faccao esta presente */
@@ -151,7 +163,11 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_LIDER_FACCAO AS
         col_nacoes TAB_NOME_NACAO := tab_nome_nacao();
         v_indice NUMBER := 0;
     BEGIN
-        FOR v_nacao_faccao IN (SELECT * FROM NACAO_FACCAO WHERE FACCAO = p_nome_faccao)
+        FOR v_nacao_faccao IN (
+            SELECT NACAO, FACCAO
+            FROM NACAO_FACCAO
+            WHERE FACCAO = p_nome_faccao
+        )
         LOOP
             col_nacoes.extend();
             v_indice := v_indice + 1;
@@ -167,8 +183,11 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_LIDER_FACCAO AS
         col_comunidades TAB_COMUNIDADE := tab_comunidade();
         v_indice NUMBER := 0;
     BEGIN
-        FOR v_participa IN (SELECT * FROM PARTICIPA WHERE FACCAO = p_nome_faccao)
-        LOOP
+        FOR v_participa IN (
+            SELECT FACCAO, ESPECIE, COMUNIDADE
+            FROM PARTICIPA
+            WHERE FACCAO = p_nome_faccao
+        ) LOOP
             col_comunidades.extend();
             v_indice := v_indice + 1;
             col_comunidades(v_indice).NOME := v_participa.COMUNIDADE;

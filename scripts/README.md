@@ -189,9 +189,11 @@ Inclui as seguintes funções/procedimentos:
 ### 2. INDICAR_NOVO_LIDER
 - **Implementação**: `lider-faccao.sql`
 - **Parâmetros**: `p_id_novo_lider CHAR(14)`, `p_id_lider_atual CHAR(14)`
-- **Descrição**: 
+- **Descrição**: Recebe o id do líder que está sendo indicado e o id do atual líder da facção. Busca a facção do líder atual e atualiza o líder na tabela *FACCAO* com o id do novo líder.
+- **Triggers**: Desencadeia o trigger `TRIG_VALIDA_NACAO_NOVO_LIDER` ao realizar o *UPDATE* na tabela *FACCAO*.
 - **Objetivo**: Permitir que os usuários do tipo 'Líder de Facção' possam indicar um novo líder para a própria facção.
 - **Exceções**:
+
 
 ### 3. CREDENCIAR_NOVA_COMUNIDADE
 - **Implementação**: `lider-faccao.sql`
@@ -211,4 +213,7 @@ Inclui as seguintes funções/procedimentos:
 - **Parâmetros**: `p_nome_faccao VARCHAR2(15)`, `p_nome_nacao VARCHAR2(15)`
 - **Descrição**: Recebe o nome de uma facção e de uma nação e remove a associação entre a nação e facção em questão da tabela *NACAO_FACCAO*.
 - **Objetivo**: Permitir que os usuários do tipo 'Líder de Facção' possam remover facções de nações.
-- **Exceções**: `ORA-20001` - Associação de nação-facção não encontrada.
+- **Triggers**: Desencadeia o trigger `TRIG_REMOVER_NACAO_FACCAO` ao realizar o *DELETE* na tabela *NACAO_FACCAO*.
+- **Exceções**:
+    1. `ORA-20001` - Associação de nação-facção não encontrada.
+    2. `ORA-20005` - O líder da facção "[nome-faccao]" pertence a nação "[nome-nacao]" e, portanto, tal facção nao pode ser removida dessa nação.
