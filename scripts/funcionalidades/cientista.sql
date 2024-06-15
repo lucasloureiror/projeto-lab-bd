@@ -13,18 +13,8 @@ END PAC_FUNC_CIENTISTA;
 /
 
 CREATE OR REPLACE PACKAGE BODY PAC_FUNC_CIENTISTA AS
-
-    /* Funcao privada: Verifica se as coordenadas de uma estrela ja existem */
-    FUNCTION coordenadas_ja_existem(p_x ESTRELA.X%TYPE, p_y ESTRELA.Y%TYPE, p_z ESTRELA.Z%TYPE)
-    RETURN BOOLEAN IS 
-        v_qtd_estrelas NUMBER;
-    BEGIN
-        SELECT COUNT(*) INTO v_qtd_estrelas
-        FROM ESTRELA
-        WHERE X = p_x AND Y = p_y AND Z = p_z;
-        
-        RETURN v_qtd_estrelas > 0;
-    END coordenadas_ja_existem;
+    /* Declaracao de funcoes/procedimentos privados */
+    FUNCTION coordenadas_ja_existem(p_x ESTRELA.X%TYPE, p_y ESTRELA.Y%TYPE, p_z ESTRELA.Z%TYPE) RETURN BOOLEAN;
 
     /* Procedimento publico: Criar uma nova estrela */
     PROCEDURE criar_estrela(p_estrela IN ESTRELA%ROWTYPE) AS
@@ -110,6 +100,18 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_CIENTISTA AS
         EXCEPTION
             WHEN e_estrela_nao_existe THEN RAISE_APPLICATION_ERROR(-20001, 'Estrela nao encontrada.');
     END remover_estrela;
+    
+    /* Funcao privada: Verifica se as coordenadas de uma estrela ja existem */
+    FUNCTION coordenadas_ja_existem(p_x ESTRELA.X%TYPE, p_y ESTRELA.Y%TYPE, p_z ESTRELA.Z%TYPE)
+    RETURN BOOLEAN IS 
+        v_qtd_estrelas NUMBER;
+    BEGIN
+        SELECT COUNT(*) INTO v_qtd_estrelas
+        FROM ESTRELA
+        WHERE X = p_x AND Y = p_y AND Z = p_z;
+        
+        RETURN v_qtd_estrelas > 0;
+    END coordenadas_ja_existem;
 
 END PAC_FUNC_CIENTISTA;
 /

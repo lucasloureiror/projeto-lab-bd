@@ -7,9 +7,9 @@ Para criar o esquema do banco do zero, ou seja, para criar todas as tabelas, seq
 4. `log.sql`
 5. `views.sql`
 6. `triggers.sql`
-7. `cientista.sql`
+7. `lider-faccao.sql`
 8. `comandante.sql`
-9. `lider-faccao.sql`
+9. `cientista.sql`
 
 
 # Remoção do banco
@@ -161,7 +161,7 @@ Inclui as seguintes funções/procedimentos:
 ### 4. INSERIR_DOMINANCIA
 - **Implementação**: `comandante.sql`
 - **Parâmetros**: `p_id_planeta VARCHAR2(15)`, `p_data_ini DATE`, `p_id_lider CHAR(14)`
-- **Descrição**: Recebe o id de um planeta, uma data de início e o CPI do líder. Busca a nação do líder, verifica se o planeta não está sendo dominado por ninguém atualmente e então insere a nova dominância.
+- **Descrição**: Recebe o id de um planeta, uma data de início e o CPI do líder. Busca a nação do líder, verifica se o planeta não está sendo dominado por ninguém atualmente e então insere a nova dominância. Também ajusta a quantidade de planetas dominados pela nação em questão na tabela *NACAO*.
 - **Objetivo**: Permitir que os usuários do tipo 'Comandante' possam inserir novas dominâncias da própria nação.
 - **Exceções**:
     1. `ORA-20001` - Líder não encontrado.
@@ -214,7 +214,7 @@ Inclui as seguintes funções/procedimentos:
 ### 4. REMOVER_FACCAO_DE_NACAO
 - **Implementação**: `lider-faccao.sql`
 - **Parâmetros**: `p_nome_faccao VARCHAR2(15)`, `p_nome_nacao VARCHAR2(15)`
-- **Descrição**: Recebe o nome de uma facção e de uma nação e remove a associação entre a nação e facção em questão da tabela *NACAO_FACCAO*.
+- **Descrição**: Recebe o nome de uma facção e de uma nação e remove a associação entre a nação e facção em questão da tabela *NACAO_FACCAO*. Também ajusta a quantidade de nações da facção em questão na tabela *FACCAO*.
 - **Objetivo**: Permitir que os usuários do tipo 'Líder de Facção' possam remover facções de nações.
 - **Triggers**: Desencadeia o trigger `TRIG_REMOVER_NACAO_FACCAO` ao realizar o *DELETE* na tabela *NACAO_FACCAO*.
 - **Exceções**:

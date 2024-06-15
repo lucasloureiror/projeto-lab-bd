@@ -17,51 +17,10 @@ END PAC_FUNC_COMANDANTE;
 /
 
 CREATE OR REPLACE PACKAGE BODY PAC_FUNC_COMANDANTE AS
-
-    /* Funcao privada: buscar a nacao de um lider */
-    FUNCTION buscar_propria_nacao(p_id_lider LIDER.CPI%TYPE)
-    RETURN NACAO%ROWTYPE AS
-        v_nome_nacao LIDER.NACAO%TYPE;
-        v_propria_nacao NACAO%ROWTYPE;
-    BEGIN
-        SELECT NACAO INTO v_nome_nacao
-        FROM LIDER
-        WHERE CPI = p_id_lider;
-        
-        SELECT * INTO v_propria_nacao
-        FROM NACAO
-        WHERE NOME = v_nome_nacao;
-        
-        RETURN v_propria_nacao;
-    
-        EXCEPTION
-            WHEN NO_DATA_FOUND THEN RAISE_APPLICATION_ERROR(-20001, 'Lider nao encontrado.');
-    END buscar_propria_nacao;
-    
-    /* Funcao privada: verificar se uma federacao tem pelo menos 1 nacao associada */
-    FUNCTION federacao_tem_nacao_associada(p_nome_federacao FEDERACAO.NOME%TYPE)
-    RETURN BOOLEAN AS
-        v_qtd_nacoes_associadas NUMBER;
-    BEGIN
-        SELECT COUNT(*) INTO v_qtd_nacoes_associadas
-        FROM NACAO
-        WHERE FEDERACAO = p_nome_federacao;
-        
-        RETURN v_qtd_nacoes_associadas > 0;
-    END federacao_tem_nacao_associada;
-    
-    /* Funcao privada: verificar se um planeta esta sendo dominado por alguem atualmente */
-    FUNCTION planeta_tem_dominancia_atual(p_id_planeta PLANETA.ID_ASTRO%TYPE)
-    RETURN BOOLEAN AS
-        v_qtd_dominancias_atuais NUMBER;
-    BEGIN
-        SELECT COUNT(*) INTO v_qtd_dominancias_atuais
-        FROM DOMINANCIA
-        WHERE PLANETA = p_id_planeta
-        AND (DATA_FIM IS NULL OR DATA_FIM >= SYSDATE);
-        
-        RETURN v_qtd_dominancias_atuais > 0;
-    END planeta_tem_dominancia_atual;
+    /* Declaracao de funcoes/procedimentos privados */
+    FUNCTION buscar_propria_nacao(p_id_lider LIDER.CPI%TYPE) RETURN NACAO%ROWTYPE;
+    FUNCTION federacao_tem_nacao_associada(p_nome_federacao FEDERACAO.NOME%TYPE) RETURN BOOLEAN;
+    FUNCTION planeta_tem_dominancia_atual(p_id_planeta PLANETA.ID_ASTRO%TYPE) RETURN BOOLEAN;
     
     /* Procedimento publico: Incluir a propria nacao em uma federacao existente */
     PROCEDURE incluir_propria_nacao(p_nome_federacao FEDERACAO.NOME%TYPE, p_id_lider LIDER.CPI%TYPE) AS
@@ -192,6 +151,13 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_COMANDANTE AS
         VALUES(p_id_planeta, v_propria_nacao.NOME, p_data_ini);
         COMMIT;
         
+        -- Atualizar a quantidade de planetas dominados pela nacao
+        UPDATE NACAO
+        SET QTD_PLANETAS = (v_propria_nacao.QTD_PLANETAS + 1)
+        WHERE NOME = v_propria_nacao.NOME;
+        
+        COMMIT;
+        
         EXCEPTION
             WHEN e_planeta_ja_tem_dominancia THEN
                 RAISE_APPLICATION_ERROR(-20005, 'Esse planeta ja esta sendo dominado.');
@@ -200,6 +166,51 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_COMANDANTE AS
             WHEN e_inserir_null THEN
                 RAISE_APPLICATION_ERROR(-20004, 'Os atributos "PLANETA", "NACAO" e "DATA_INI" nao podem ser nulos.');
     END;
+    
+    /* Funcao privada: buscar a nacao de um lider */
+    FUNCTION buscar_propria_nacao(p_id_lider LIDER.CPI%TYPE)
+    RETURN NACAO%ROWTYPE AS
+        v_nome_nacao LIDER.NACAO%TYPE;
+        v_propria_nacao NACAO%ROWTYPE;
+    BEGIN
+        SELECT NACAO INTO v_nome_nacao
+        FROM LIDER
+        WHERE CPI = p_id_lider;
+        
+        SELECT * INTO v_propria_nacao
+        FROM NACAO
+        WHERE NOME = v_nome_nacao;
+        
+        RETURN v_propria_nacao;
+    
+        EXCEPTION
+            WHEN NO_DATA_FOUND THEN RAISE_APPLICATION_ERROR(-20001, 'Lider nao encontrado.');
+    END buscar_propria_nacao;
+    
+    /* Funcao privada: verificar se uma federacao tem pelo menos 1 nacao associada */
+    FUNCTION federacao_tem_nacao_associada(p_nome_federacao FEDERACAO.NOME%TYPE)
+    RETURN BOOLEAN AS
+        v_qtd_nacoes_associadas NUMBER;
+    BEGIN
+        SELECT COUNT(*) INTO v_qtd_nacoes_associadas
+        FROM NACAO
+        WHERE FEDERACAO = p_nome_federacao;
+        
+        RETURN v_qtd_nacoes_associadas > 0;
+    END federacao_tem_nacao_associada;
+    
+    /* Funcao privada: verificar se um planeta esta sendo dominado por alguem atualmente */
+    FUNCTION planeta_tem_dominancia_atual(p_id_planeta PLANETA.ID_ASTRO%TYPE)
+    RETURN BOOLEAN AS
+        v_qtd_dominancias_atuais NUMBER;
+    BEGIN
+        SELECT COUNT(*) INTO v_qtd_dominancias_atuais
+        FROM DOMINANCIA
+        WHERE PLANETA = p_id_planeta
+        AND (DATA_FIM IS NULL OR DATA_FIM >= SYSDATE);
+        
+        RETURN v_qtd_dominancias_atuais > 0;
+    END planeta_tem_dominancia_atual;
 
 END PAC_FUNC_COMANDANTE;
 /

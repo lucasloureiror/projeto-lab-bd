@@ -113,8 +113,10 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_LIDER_FACCAO AS
     
     /* Procedimento publico: Remover faccao de nacao (NacaoFaccao) */
     PROCEDURE remover_faccao_de_nacao(p_nome_faccao FACCAO.NOME%TYPE, p_nome_nacao NACAO.NOME%TYPE) AS
+        v_qtd_nacoes_associadas NUMBER;
         e_nacao_faccao_nao_existe EXCEPTION;
     BEGIN
+        -- Remover a faccao da nacao
         DELETE FROM NACAO_FACCAO
         WHERE NACAO = p_nome_nacao
         AND FACCAO = p_nome_faccao;
@@ -122,6 +124,16 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_LIDER_FACCAO AS
         IF SQL%NOTFOUND THEN
             RAISE e_nacao_faccao_nao_existe;
         END IF;
+        
+        -- Verificar quantas nacoes estavam associadas aquela faccao
+        SELECT QTD_NACOES INTO v_qtd_nacoes_associadas
+        FROM FACCAO
+        WHERE NOME = p_nome_faccao;
+        
+        -- Atualizar a quantidade de nacoes associadas
+        UPDATE FACCAO
+        SET QTD_NACOES = (v_qtd_nacoes_associadas - 1)
+        WHERE NOME = p_nome_faccao;
         
         COMMIT;
 
