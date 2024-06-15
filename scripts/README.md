@@ -193,6 +193,9 @@ Inclui as seguintes funções/procedimentos:
 - **Triggers**: Desencadeia o trigger `TRIG_VALIDA_NACAO_NOVO_LIDER` ao realizar o *UPDATE* na tabela *FACCAO*.
 - **Objetivo**: Permitir que os usuários do tipo 'Líder de Facção' possam indicar um novo líder para a própria facção.
 - **Exceções**:
+    1. `ORA-20001` - Líder de facção não encontrado.
+    2. `ORA-20004` - O atributo "LIDER" não pode ser nulo. Indique o CPI do novo líder e tente novamente.
+    3. `ORA-20005` - A facção "[nome-faccao]" não está presente na nação do líder "[nome-lider]". Escolha outro líder e tente novamente.
 
 
 ### 3. CREDENCIAR_NOVA_COMUNIDADE
