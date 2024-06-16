@@ -33,7 +33,6 @@ BEGIN
         IF v_qtd_usuarios = 0 THEN
             INSERT INTO USERS(USER_ID, PASSWORD, ID_LIDER)
             VALUES(SEQ_USER_ID.NEXTVAL, PASSWORD_MD5(p_senha_padrao), v_lider.CPI);
-            COMMIT;
         END IF;
     END LOOP;
 END;
@@ -42,6 +41,7 @@ END;
 /* Execucao manual do procedimento para cadastrar na tabela USERS os lideres ja cadastrados */
 BEGIN
     PROC_CRIA_USUARIOS_PADRAO('lider_padrao');
+    COMMIT;
 END;
 /
 
@@ -71,7 +71,7 @@ BEGIN
 END;
 /
 
-/* Funcaoo para obter o cargo de um usuario/lider */
+/* Funcao para obter o cargo de um usuario/lider */
 CREATE OR REPLACE FUNCTION FUNC_BUSCA_CARGO_USUARIO(
     p_id_lider USERS.ID_LIDER%TYPE
 ) RETURN LIDER.CARGO%TYPE AS
@@ -91,13 +91,29 @@ END;
 /* Funcao para verificar se um usuario eh um lider de faccao (esta associado a uma faccao cadastrada) */
 CREATE OR REPLACE FUNCTION FUNC_VALIDA_LIDER_FACCAO(
     p_id_lider USERS.ID_LIDER%TYPE
-) RETURN NUMBER AS
+) RETURN BOOLEAN AS
     v_eh_lider_faccao NUMBER;
 BEGIN
     SELECT COUNT(*) INTO v_eh_lider_faccao
     FROM FACCAO
     WHERE LIDER = p_id_lider;
 
-    RETURN v_eh_lider_faccao;
+    RETURN v_eh_lider_faccao > 0;
+END;
+/
+
+/* Funcao para obter o nome de um usuario/lider */
+CREATE OR REPLACE FUNCTION FUNC_BUSCA_NOME_USUARIO(p_id_lider USERS.ID_LIDER%TYPE)
+RETURN LIDER.NOME%TYPE AS
+    v_nome_usuario LIDER.NOME%TYPE;
+BEGIN
+    SELECT NOME INTO v_nome_usuario
+    FROM LIDER
+    WHERE CPI = p_id_lider;
+    
+    RETURN v_nome_usuario;
+    
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN RAISE_APPLICATION_ERROR(-20001, 'Usuario nao encontrado.');
 END;
 /
