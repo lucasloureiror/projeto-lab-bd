@@ -40,7 +40,7 @@ CREATE OR REPLACE PACKAGE BODY Relatorios_Lider_de_Faccao AS
                 PA.Especie AS Especie,
                 C.QTD_Habitantes AS QTD_Habitantes
             FROM Lider L 
-            JOIN Faccao F ON L.CPI = F.Lider AND L.CPI = lider_logado.CPI
+            JOIN Faccao F ON L.CPI = F.Lider AND L.CPI = lider_logado
             JOIN Nacao_Faccao NF ON NF.Faccao = F.Nome
             JOIN Nacao N ON N.Nome = NF.Nacao
             JOIN Dominancia D ON D.Nacao = N.Nome AND D.DATA_INI <= TRUNC(SYSDATE) AND
