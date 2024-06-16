@@ -34,7 +34,7 @@ async def handle_form(request: Request, response: Response, username: str = Form
         })
 
         # Definir o cookie
-        response.set_cookie(key="user_data", value=resultado_json)
+        response.set_cookie(key="user_data", value=resultado_json, path="/")
 
         
         return templates.TemplateResponse("index.html", {"request": request, "message": "Login realizado com sucesso"})
