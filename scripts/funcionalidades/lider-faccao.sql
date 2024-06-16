@@ -36,8 +36,6 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_LIDER_FACCAO AS
         SET NOME = p_novo_nome_faccao
         WHERE NOME = v_faccao_lider.NOME;
         
-        COMMIT;
-        
         EXCEPTION
             WHEN e_novo_nome_igual_atual THEN RAISE_APPLICATION_ERROR(-20005, 'O novo nome da faccao deve ser diferente do nome atual.');
     END alterar_nome_faccao;
