@@ -1,4 +1,5 @@
 import oracledb
+from models import Usuario
 
 # Função para conectar ao banco de dados Oracle
 def get_connection():
@@ -9,7 +10,8 @@ def get_connection():
         return connection
     except oracledb.DatabaseError as e:
         error, = e.args
-        print("Falha na conexão com o banco de dados:", error.message)
+        print("Falha na conexão com o banco de dados! --> ", error.message)
+        raise
 
 
 # Função para validar as credenciais do usuário
@@ -18,21 +20,41 @@ async def check_credentials(username: str, password: str):
         connection = get_connection()
         cursor = connection.cursor()
 
-        print("Checando credenciais...")
+        try:
+            # Validar o usuário pela tabela USERS
+            user_id = cursor.callfunc("FUNC_VALIDA_USUARIO", int, [username, password])
+            print("Usuário encontrado! User ID: ", user_id)
 
-        # Login bem-sucedido se a função retornar um ID válido
-        user_id = cursor.callfunc("FUNC_VALIDA_USUARIO", int, [username, password])
-        print("Usuário encontrado! User ID: ", user_id);
+            # Registrar o acesso do usuário na tabela LOG_TABLE
+            cursor.callproc("PROC_INSERIR_LOG", [user_id, "LOGIN REALIZADO NA APLICAÇÃO"])
+            print("Acesso registrado no log")
 
-        cursor.close()
-        connection.close()
-        return user_id
+            # Buscar o cargo do usuário logado
+            cargo = cursor.callfunc("FUNC_BUSCA_CARGO_USUARIO", str, [username])
+
+            # Verificar se o usuário logado é um líder de facção
+            eh_lider_faccao = cursor.callfunc("FUNC_VALIDA_LIDER_FACCAO", bool, [username])
+
+            connection.commit()
+            
+            return Usuario(user_id, username, cargo, eh_lider_faccao)
+        
+        except oracledb.DatabaseError as e:
+            error, = e.args
+            if error.code == 20001:
+                mensagem = "Usuário não encontrado."
+            elif error.code == 20002:
+                mensagem = "Senha inválida."
+            else:
+                mensagem = f"{error.code}: {error.message}"
+
+            connection.rollback()
+            print(mensagem)
+            return mensagem
+        
+        finally:
+            cursor.close()
+            connection.close()
+
     except oracledb.DatabaseError as e:
-        error, = e.args
-        if error.code == 20001:
-            mensagem = "Usuário não encontrado."
-        elif error.code == 20002:
-            mensagem = "Senha inválida."
-        else:
-            mensagem = f"{error.code}: {error.message}"
-        return mensagem
+        return "Conexão falhou"

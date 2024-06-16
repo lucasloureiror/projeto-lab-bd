@@ -3,6 +3,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import repository.connection
+from models import Usuario
 
 app = FastAPI()
 
@@ -18,7 +19,11 @@ async def read_root(request: Request):
 async def handle_form(request: Request, username: str = Form(...), password: str = Form(...)):
     
     resultado = await repository.connection.check_credentials(username, password)
-    if isinstance(resultado, int) and resultado > 0:
+
+    # Login bem-sucedido se a função retornar um ID válido
+    if isinstance(resultado, Usuario):
+        print("Usuario logado: {", resultado.user_id, ",", resultado.username, ",", resultado.cargo, ",", resultado.eh_lider_faccao, "}")
+        
         return templates.TemplateResponse("index.html", {"request": request, "message": "Login realizado com sucesso"})
     else:
         return templates.TemplateResponse("index.html", {"request": request, "message": resultado})

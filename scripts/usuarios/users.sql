@@ -33,7 +33,6 @@ BEGIN
         IF v_qtd_usuarios = 0 THEN
             INSERT INTO USERS(USER_ID, PASSWORD, ID_LIDER)
             VALUES(SEQ_USER_ID.NEXTVAL, PASSWORD_MD5(p_senha_padrao), v_lider.CPI);
-            COMMIT;
         END IF;
     END LOOP;
 END;
@@ -42,6 +41,7 @@ END;
 /* Execucao manual do procedimento para cadastrar na tabela USERS os lideres ja cadastrados */
 BEGIN
     PROC_CRIA_USUARIOS_PADRAO('lider_padrao');
+    COMMIT;
 END;
 /
 
@@ -91,13 +91,13 @@ END;
 /* Funcao para verificar se um usuario eh um lider de faccao (esta associado a uma faccao cadastrada) */
 CREATE OR REPLACE FUNCTION FUNC_VALIDA_LIDER_FACCAO(
     p_id_lider USERS.ID_LIDER%TYPE
-) RETURN NUMBER AS
+) RETURN BOOLEAN AS
     v_eh_lider_faccao NUMBER;
 BEGIN
     SELECT COUNT(*) INTO v_eh_lider_faccao
     FROM FACCAO
     WHERE LIDER = p_id_lider;
 
-    RETURN v_eh_lider_faccao;
+    RETURN v_eh_lider_faccao > 0;
 END;
 /
