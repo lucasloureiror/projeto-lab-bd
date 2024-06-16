@@ -221,3 +221,13 @@ Inclui as seguintes funções/procedimentos:
     1. `ORA-20001` - Facção não encontrada. 
     2. `ORA-20001` - Associação de nação-facção não encontrada.
     3. `ORA-20005` - O líder da facção "[nome-faccao]" pertence a nação "[nome-nacao]" e, portanto, tal facção nao pode ser removida dessa nação.
+
+## Relatorios_Lider_de_Faccao
+Inclui as seguintes funções/procedimentos:
+1. `Gerar_Relatorio(lider_logado, ordenar_por)`
+
+### 1. Gerar_Relatorio
+- **Implementação**: `relatorios_lider.sql`
+- **Parâmetros**: `lider_logado lider%ROWTYPE`, `ordenar_por VARCHAR2`
+- **Descrição**: Gera um relatório mostrando informações de todas as comunidades da Facção comandada pelo lider passado, e agrupa pelo atributo passo no segundo parâmetro, podendo ser: NACAO, SISTEMA, ESPECIE ou PLANETA.
+- **Objetivo**: Permitir que qualquer lider de facção gere relatórios que possibilitem acompanhar suas comunidades.

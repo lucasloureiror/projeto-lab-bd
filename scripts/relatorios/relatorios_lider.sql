@@ -20,7 +20,7 @@ CREATE OR REPLACE PACKAGE Relatorios_Lider_de_Faccao AS
     Nao_Eh_Algo_Valido_Para_Ordenar EXCEPTION;
 
     -- Declaração da função que retorna uma tabela de registros
-    FUNCTION Gerar_Relatorio(lider_logado IN lider%ROWTYPE, ordenar_por VARCHAR2) 
+    FUNCTION Gerar_Relatorio(lider_logado IN lider.CPI%TYPE, ordenar_por VARCHAR2) 
     RETURN Comunidade_Table PIPELINED;
 
 END Relatorios_Lider_de_Faccao;
@@ -30,7 +30,7 @@ END Relatorios_Lider_de_Faccao;
 CREATE OR REPLACE PACKAGE BODY Relatorios_Lider_de_Faccao AS
 
     -- Função para gerar o relatório
-    FUNCTION Gerar_Relatorio(lider_logado IN lider%ROWTYPE, ordenar_por VARCHAR2) RETURN Comunidade_Table PIPELINED IS
+    FUNCTION Gerar_Relatorio(lider_logado IN lider.CPI%TYPE, ordenar_por VARCHAR2) RETURN Comunidade_Table PIPELINED IS
         CURSOR c_communities IS
             SELECT 
                 C.NOME AS Nome,
