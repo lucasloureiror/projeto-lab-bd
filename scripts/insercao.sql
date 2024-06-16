@@ -1,0 +1,71 @@
+/* Script de insercao de dados usados para os testes */
+
+-- ESTRELA --
+INSERT INTO ESTRELA VALUES('E001', 'Sol', 'Espectral G2-V', 198892, 78.135, 54.157, -16.5);
+INSERT INTO ESTRELA VALUES('E002', 'Proxima Centauri', 'Espectral M5.5', 2428, 7.841, 6.214, 65.3);
+INSERT INTO ESTRELA VALUES('E003', 'Alpha Centauri A', 'Espectral G2-V', 2188, 10.149, 13.761, 54.7);
+INSERT INTO ESTRELA VALUES('E004', 'Alpha Centauri B', 'Espectral K1-V', 1804, 3.669, 5.135, 59.1);
+
+-- SISTEMA --
+INSERT INTO SISTEMA VALUES('E001', 'Sistema Solar');
+INSERT INTO SISTEMA VALUES('E003', 'Alpha Centauri');
+
+-- ORBITA_ESTRELA --
+INSERT INTO ORBITA_ESTRELA VALUES('E002', 'E003', 2.308, 7.547, 84);
+INSERT INTO ORBITA_ESTRELA VALUES('E004', 'E003', 6.480, 8.626, 76);
+
+-- PLANETA --
+INSERT INTO PLANETA VALUES ('Terra', 5972, 6371, 'Terrestre');
+INSERT INTO PLANETA VALUES ('Marte', 639, 3389, 'Terrestre');
+INSERT INTO PLANETA VALUES ('Jupiter', 189800, 69911, 'Gasoso');
+INSERT INTO PLANETA VALUES ('Saturno', 56830, 58232, 'Gasoso');
+
+-- ORBITA_PLANETA --
+INSERT INTO ORBITA_PLANETA VALUES ('Terra', 'E001', 147.1, 152.1, 365);
+INSERT INTO ORBITA_PLANETA VALUES ('Marte', 'E001', 207.4, 249.2, 687);
+INSERT INTO ORBITA_PLANETA VALUES ('Jupiter', 'E001', 954.7, 1025.2, 4329);
+INSERT INTO ORBITA_PLANETA VALUES ('Saturno', 'E001', 1647.6, 1669.9, 8928);
+
+-- ESPECIE --
+INSERT INTO ESPECIE VALUES ('Humanos', 'Terra', 'V');
+INSERT INTO ESPECIE VALUES ('Marcianos', 'Marte', 'V');
+
+-- COMUNIDADE --
+INSERT INTO COMUNIDADE VALUES('Humanos', 'Cidade Estelar', 1000000);
+INSERT INTO COMUNIDADE VALUES('Marcianos', 'Refugio Aurora', 500000);
+
+-- HABITACAO --
+INSERT INTO HABITACAO VALUES('Terra', 'Humanos', 'Cidade Estelar', TO_DATE('01-01-2024', 'DD-MM-YYYY'), NULL);
+INSERT INTO HABITACAO VALUES('Marte', 'Marcianos', 'Refugio Aurora', TO_DATE('12-12-2012', 'DD-MM-YYYY'), NULL);
+
+-- FEDERACAO --
+INSERT INTO FEDERACAO VALUES('Alianca Solar', TO_DATE('01/01/2011', 'DD/MM/YYYY'));
+
+-- NACAO --
+INSERT INTO NACAO VALUES ('Uniao Terraquea', 1, 'Alianca Solar');
+INSERT INTO NACAO VALUES ('Frota Marciana', 2, 'Alianca Solar');
+
+-- DOMINANCIA --
+INSERT INTO DOMINANCIA VALUES('Terra', 'Uniao Terraquea', TO_DATE('01-01-2024', 'DD-MM-YYYY'), NULL);
+INSERT INTO DOMINANCIA VALUES('Marte', 'Frota Marciana', TO_DATE('12-12-2012', 'DD-MM-YYYY'), NULL);
+INSERT INTO DOMINANCIA VALUES('Jupiter', 'Frota Marciana', TO_DATE('03-05-2024', 'DD-MM-YYYY'), NULL);
+
+-- LIDER --
+INSERT INTO LIDER VALUES('912.148.763-26', 'Jack ONeill', 'COMANDANTE', 'Uniao Terraquea', 'Humanos');
+INSERT INTO LIDER VALUES('687.897.454-65', 'Dr. Zarnak', 'CIENTISTA', 'Frota Marciana', 'Marcianos');
+INSERT INTO LIDER VALUES('123.456.789-10', 'Samantha Carter', 'OFICIAL', 'Uniao Terraquea', 'Humanos');
+INSERT INTO LIDER VALUES('109.876.543-21', 'Daniel Jackson', 'OFICIAL', 'Uniao Terraquea', 'Humanos');
+
+-- FACCAO --
+INSERT INTO FACCAO VALUES('Exploradores', '912.148.763-26', 'PROGRESSISTA', 1);	
+INSERT INTO FACCAO VALUES('Resistencia', '687.897.454-65', 'TRADICIONALISTA', 1);
+
+-- NACAO_FACCAO --
+INSERT INTO NACAO_FACCAO VALUES('Uniao Terraquea', 'Exploradores');
+INSERT INTO NACAO_FACCAO VALUES('Frota Marciana', 'Resistencia');
+
+-- PARTICIPA --
+INSERT INTO PARTICIPA VALUES('Exploradores', 'Humanos', 'Cidade Estelar');
+INSERT INTO PARTICIPA VALUES('Resistencia', 'Marcianos', 'Refugio Aurora');
+
+COMMIT;
