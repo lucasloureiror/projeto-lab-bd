@@ -3,11 +3,13 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.responses import RedirectResponse
 import repository.connection
-import json
 from models import Usuario
 
 app = FastAPI()
+
+usuario:Usuario
 
 origins = [
     "http://localhost",
@@ -38,20 +40,17 @@ async def handle_form(request: Request, response: Response, username: str = Form
     # Login bem-sucedido se a função retornar um ID válido
     if isinstance(resultado, Usuario):
         print("Usuario logado: {", resultado.user_id, ",", resultado.username, ",", resultado.cargo, ",", resultado.eh_lider_faccao, "}")
-
-        # Serializar o objeto resultado para JSON
-        resultado_json = json.dumps({
-            "user_id": resultado.user_id,
-            "username": resultado.username,
-            "cargo": resultado.cargo,
-            "eh_lider_faccao": resultado.eh_lider_faccao
-        })
-
-        # Definir o cookie
-        response.set_cookie(key="user_data", value=resultado_json, path="/")
-
+        global usuario
+        usuario = resultado
         
-        return templates.TemplateResponse("index.html", {"request": request, "message": "Login realizado com sucesso"})
+        return RedirectResponse("/overview")
     else:
         return templates.TemplateResponse("index.html", {"request": request, "message": resultado})
 
+@app.post("/overview")
+async def read_overview(request: Request, response: Response):
+    return templates.TemplateResponse("overview.html", {"request": request, "usuario": usuario})
+
+@app.get("/action")
+async def action():
+    return {"message": "Ação executada!"}

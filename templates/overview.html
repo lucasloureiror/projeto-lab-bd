@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Overview</title>
+    <link href="{{ url_for('static', path='/overview.css') }}" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Dashboard de Overview</h1>
+            <div class="user-info">
+                <span>Bem-vindo, <strong>{{ usuario.username }}</strong></span>
+            </div>
+        </div>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="index.html">Overview</a></li>
+            <li><a href="relatorios.html">Relatórios</a></li>
+        </ul>
+    </nav>
+    <main>
+        <section class="overview">
+            <h2>Funcionalidades de Gerenciamento</h2>
+            <h3>{{ usuario.cargo }}</h3>
+            <div class="dropdown">
+                <button class="dropbtn">Menu</button>
+                <div class="dropdown-content">
+                    <a href="{{ url_for('action') }}">{{ usuario.cargo }}</a>
+                    {% if usuario.eh_lider_faccao %}
+                    <a href="{{ url_for('action') }}">LÍDER DE FACÇÃO</a>
+                    {% endif %}
+                </div>
+            </div>
+            <!-- Adicione mais conteúdo relevante aqui -->
+        </section>
+    </main>
+</body>
+</html>
