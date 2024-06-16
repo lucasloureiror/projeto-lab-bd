@@ -71,7 +71,7 @@ BEGIN
 END;
 /
 
-/* Funcaoo para obter o cargo de um usuario/lider */
+/* Funcao para obter o cargo de um usuario/lider */
 CREATE OR REPLACE FUNCTION FUNC_BUSCA_CARGO_USUARIO(
     p_id_lider USERS.ID_LIDER%TYPE
 ) RETURN LIDER.CARGO%TYPE AS
@@ -99,5 +99,21 @@ BEGIN
     WHERE LIDER = p_id_lider;
 
     RETURN v_eh_lider_faccao > 0;
+END;
+/
+
+/* Funcao para obter o nome de um usuario/lider */
+CREATE OR REPLACE FUNCTION FUNC_BUSCA_NOME_USUARIO(p_id_lider USERS.ID_LIDER%TYPE)
+RETURN LIDER.NOME%TYPE AS
+    v_nome_usuario LIDER.NOME%TYPE;
+BEGIN
+    SELECT NOME INTO v_nome_usuario
+    FROM LIDER
+    WHERE CPI = p_id_lider;
+    
+    RETURN v_nome_usuario;
+    
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN RAISE_APPLICATION_ERROR(-20001, 'Usuario nao encontrado.');
 END;
 /

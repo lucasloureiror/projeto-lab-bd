@@ -26,7 +26,7 @@ async def check_credentials(username: str, password: str):
             print("Usuário encontrado! User ID: ", user_id)
 
             # Registrar o acesso do usuário na tabela LOG_TABLE
-            cursor.callproc("PROC_INSERIR_LOG", [user_id, "LOGIN REALIZADO NA APLICAÇÃO"])
+            cursor.callproc("PROC_INSERIR_LOG", [user_id, "Login realizado com sucesso."])
             print("Acesso registrado no log")
 
             # Buscar o cargo do usuário logado
@@ -35,9 +35,12 @@ async def check_credentials(username: str, password: str):
             # Verificar se o usuário logado é um líder de facção
             eh_lider_faccao = cursor.callfunc("FUNC_VALIDA_LIDER_FACCAO", bool, [username])
 
+            # Buscar o nome do usuário
+            nome = cursor.callfunc("FUNC_BUSCA_NOME_USUARIO", str, [username])
+
             connection.commit()
             
-            return Usuario(user_id, username, cargo, eh_lider_faccao)
+            return Usuario(user_id, username, nome, cargo, eh_lider_faccao)
         
         except oracledb.DatabaseError as e:
             error, = e.args

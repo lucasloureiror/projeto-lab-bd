@@ -39,7 +39,7 @@ async def handle_form(request: Request, response: Response, username: str = Form
 
     # Login bem-sucedido se a função retornar um ID válido
     if isinstance(resultado, Usuario):
-        print("Usuario logado: {", resultado.user_id, ",", resultado.username, ",", resultado.cargo, ",", resultado.eh_lider_faccao, "}")
+        print(f"Usuario logado: [{resultado.user_id}, {resultado.username}, {resultado.nome}, {resultado.cargo}, {resultado.eh_lider_faccao}]")
         global usuario
         usuario = resultado
         
