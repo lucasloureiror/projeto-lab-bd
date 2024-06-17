@@ -47,7 +47,6 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_COMANDANTE AS
         UPDATE NACAO
         SET FEDERACAO = p_nome_federacao
         WHERE NOME = v_propria_nacao.NOME;
-        COMMIT;
         
         EXCEPTION
             WHEN e_nacao_ja_inclusa THEN
@@ -82,12 +81,10 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_COMANDANTE AS
         UPDATE NACAO
         SET FEDERACAO = NULL
         WHERE NOME = v_propria_nacao.NOME;
-        COMMIT;
         
         -- Excluir a federacao em questao caso ela nao esteja mais associada a nenhuma nacao
         IF FEDERACAO_TEM_NACAO_ASSOCIADA(p_nome_federacao) = FALSE THEN
             DELETE FROM FEDERACAO WHERE NOME = p_nome_federacao;
-            COMMIT;
         END IF;
         
         EXCEPTION
@@ -118,8 +115,6 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_COMANDANTE AS
         UPDATE NACAO
         SET FEDERACAO = p_federacao.NOME
         WHERE NOME = v_propria_nacao.NOME;
-        
-        COMMIT;
     
         EXCEPTION
             WHEN e_nacao_ja_tem_federacao THEN 
@@ -149,14 +144,11 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_COMANDANTE AS
         -- Inserir nova dominancia
         INSERT INTO DOMINANCIA(PLANETA, NACAO, DATA_INI)
         VALUES(p_id_planeta, v_propria_nacao.NOME, p_data_ini);
-        COMMIT;
         
         -- Atualizar a quantidade de planetas dominados pela nacao
         UPDATE NACAO
         SET QTD_PLANETAS = (v_propria_nacao.QTD_PLANETAS + 1)
         WHERE NOME = v_propria_nacao.NOME;
-        
-        COMMIT;
         
         EXCEPTION
             WHEN e_planeta_ja_tem_dominancia THEN

@@ -52,8 +52,6 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_LIDER_FACCAO AS
         SET LIDER = p_id_novo_lider
         WHERE NOME = v_faccao_lider.NOME;
         
-        COMMIT;
-        
         EXCEPTION
             WHEN e_atualizar_para_null THEN RAISE_APPLICATION_ERROR(-20004, 'O atributo "LIDER" nao pode ser nulo. Indique o CPI do novo lider e tente novamente.');
     END indicar_novo_lider;
@@ -78,7 +76,6 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_LIDER_FACCAO AS
         
         INSERT INTO VIEW_COMUNIDADE_CREDENCIADA(FACCAO, ESPECIE_HABITA, COMUNIDADE_HABITA)
         VALUES(v_faccao_lider.NOME, p_nome_especie, p_nome_comunidade);
-        COMMIT;
         
         EXCEPTION
             WHEN e_comunidade_nao_informada THEN
@@ -115,8 +112,6 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_LIDER_FACCAO AS
         UPDATE FACCAO
         SET QTD_NACOES = (v_faccao.QTD_NACOES - 1)
         WHERE NOME = v_faccao.NOME;
-        
-        COMMIT;
 
         EXCEPTION
             WHEN NO_DATA_FOUND THEN

@@ -36,7 +36,6 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_CIENTISTA AS
             p_estrela.Y,
             p_estrela.Z
         );
-        COMMIT;
         
         EXCEPTION
             WHEN DUP_VAL_ON_INDEX THEN RAISE_APPLICATION_ERROR(-20003, 'Estrela ja existe, altere o ID e tente novamente.');
@@ -76,8 +75,6 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_CIENTISTA AS
         IF SQL%ROWCOUNT = 0 THEN
             RAISE e_estrela_nao_existe;
         END IF;
-        
-        COMMIT;
 
         EXCEPTION
             WHEN e_estrela_nao_existe THEN RAISE_APPLICATION_ERROR(-20001, 'Estrela nao encontrada.');
@@ -94,8 +91,6 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_CIENTISTA AS
         IF SQL%NOTFOUND THEN
             RAISE e_estrela_nao_existe;
         END IF;
-        
-        COMMIT;
 
         EXCEPTION
             WHEN e_estrela_nao_existe THEN RAISE_APPLICATION_ERROR(-20001, 'Estrela nao encontrada.');
