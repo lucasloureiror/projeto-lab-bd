@@ -13,3 +13,113 @@ CREATE OR REPLACE TYPE Habitantes_Table_Geral AS TABLE OF Habitantes_Record;
 
 /
 
+-- Consulta Geral
+SELECT 
+                C.NOME AS Nome,
+                F.Nome AS Faccao,
+                P.Id_Astro AS Planeta,
+                S.Nome AS Sistema,
+                PA.Especie AS Especie,
+                C.QTD_Habitantes AS QTD_Habitantes
+            FROM Lider L 
+            JOIN Nacao N ON N.Nome = L.Nacao
+            JOIN Nacao_Faccao NF ON NF.nacao = N.Nome 
+            JOIN Faccao F ON F.Nome = NF.Faccao
+            JOIN Dominancia D ON D.Nacao = N.Nome AND D.DATA_INI <= TRUNC(SYSDATE) AND
+                            (D.DATA_FIM >= TRUNC(SYSDATE) OR D.DATA_FIM IS NULL)
+            JOIN Planeta P ON P.Id_Astro = D.Planeta
+            JOIN Orbita_Planeta OP ON OP.Planeta = P.Id_Astro
+            JOIN Estrela E ON E.Id_Estrela = OP.Estrela
+            JOIN Sistema S ON S.Estrela = E.Id_Estrela
+            JOIN Participa PA ON PA.Faccao = F.Nome
+            JOIN Comunidade C ON C.Especie = PA.Especie AND C.Nome = PA.Comunidade
+            JOIN Habitacao H ON H.Comunidade = C.Nome AND H.Planeta = P.Id_Astro AND H.Especie = C.Especie AND H.DATA_INI <= TRUNC(SYSDATE) AND
+                            (H.DATA_FIM >= TRUNC(SYSDATE) OR H.DATA_FIM IS NULL);
+
+/
+-- Consulta por Faccao
+SELECT 
+    F.Nome AS Faccao,
+    SUM(C.QTD_Habitantes) AS QTD_Habitantes
+FROM Lider L 
+JOIN Nacao N ON N.Nome = L.Nacao
+JOIN Nacao_Faccao NF ON NF.Nacao = N.Nome 
+JOIN Faccao F ON F.Nome = NF.Faccao
+JOIN Dominancia D ON D.Nacao = N.Nome AND D.DATA_INI <= TRUNC(SYSDATE) AND
+                    (D.DATA_FIM >= TRUNC(SYSDATE) OR D.DATA_FIM IS NULL)
+JOIN Planeta P ON P.Id_Astro = D.Planeta
+JOIN Orbita_Planeta OP ON OP.Planeta = P.Id_Astro
+JOIN Estrela E ON E.Id_Estrela = OP.Estrela
+JOIN Sistema S ON S.Estrela = E.Id_Estrela
+JOIN Participa PA ON PA.Faccao = F.Nome
+JOIN Comunidade C ON C.Especie = PA.Especie AND C.Nome = PA.Comunidade
+JOIN Habitacao H ON H.Comunidade = C.Nome AND H.Planeta = P.Id_Astro AND H.Especie = C.Especie AND H.DATA_INI <= TRUNC(SYSDATE) AND
+                    (H.DATA_FIM >= TRUNC(SYSDATE) OR H.DATA_FIM IS NULL)
+GROUP BY F.Nome;
+/
+-- Consulta por Planeta
+
+SELECT 
+    P.Id_Astro AS Planeta,
+    SUM(C.QTD_Habitantes) AS QTD_Habitantes
+FROM Lider L 
+JOIN Nacao N ON N.Nome = L.Nacao
+JOIN Nacao_Faccao NF ON NF.Nacao = N.Nome 
+JOIN Faccao F ON F.Nome = NF.Faccao
+JOIN Dominancia D ON D.Nacao = N.Nome AND D.DATA_INI <= TRUNC(SYSDATE) AND
+                    (D.DATA_FIM >= TRUNC(SYSDATE) OR D.DATA_FIM IS NULL)
+JOIN Planeta P ON P.Id_Astro = D.Planeta
+JOIN Orbita_Planeta OP ON OP.Planeta = P.Id_Astro
+JOIN Estrela E ON E.Id_Estrela = OP.Estrela
+JOIN Sistema S ON S.Estrela = E.Id_Estrela
+JOIN Participa PA ON PA.Faccao = F.Nome
+JOIN Comunidade C ON C.Especie = PA.Especie AND C.Nome = PA.Comunidade
+JOIN Habitacao H ON H.Comunidade = C.Nome AND H.Planeta = P.Id_Astro AND H.Especie = C.Especie AND H.DATA_INI <= TRUNC(SYSDATE) AND
+                    (H.DATA_FIM >= TRUNC(SYSDATE) OR H.DATA_FIM IS NULL)
+GROUP BY P.Id_Astro
+ORDER BY QTD_Habitantes DESC;
+
+/
+-- Consulta por Sistema
+
+SELECT 
+    S.Nome AS Sistema,
+    SUM(C.QTD_Habitantes) AS QTD_Habitantes
+FROM Lider L 
+JOIN Nacao N ON N.Nome = L.Nacao
+JOIN Nacao_Faccao NF ON NF.Nacao = N.Nome 
+JOIN Faccao F ON F.Nome = NF.Faccao
+JOIN Dominancia D ON D.Nacao = N.Nome AND D.DATA_INI <= TRUNC(SYSDATE) AND
+                    (D.DATA_FIM >= TRUNC(SYSDATE) OR D.DATA_FIM IS NULL)
+JOIN Planeta P ON P.Id_Astro = D.Planeta
+JOIN Orbita_Planeta OP ON OP.Planeta = P.Id_Astro
+JOIN Estrela E ON E.Id_Estrela = OP.Estrela
+JOIN Sistema S ON S.Estrela = E.Id_Estrela
+JOIN Participa PA ON PA.Faccao = F.Nome
+JOIN Comunidade C ON C.Especie = PA.Especie AND C.Nome = PA.Comunidade
+JOIN Habitacao H ON H.Comunidade = C.Nome AND H.Planeta = P.Id_Astro AND H.Especie = C.Especie AND H.DATA_INI <= TRUNC(SYSDATE) AND
+                    (H.DATA_FIM >= TRUNC(SYSDATE) OR H.DATA_FIM IS NULL)
+GROUP BY S.Nome
+ORDER BY QTD_Habitantes DESC;
+
+-- Consulta por Especie
+/
+SELECT 
+    PA.Especie AS Especie,
+    SUM(C.QTD_Habitantes) AS QTD_Habitantes
+FROM Lider L 
+JOIN Nacao N ON N.Nome = L.Nacao
+JOIN Nacao_Faccao NF ON NF.Nacao = N.Nome 
+JOIN Faccao F ON F.Nome = NF.Faccao
+JOIN Dominancia D ON D.Nacao = N.Nome AND D.DATA_INI <= TRUNC(SYSDATE) AND
+                    (D.DATA_FIM >= TRUNC(SYSDATE) OR D.DATA_FIM IS NULL)
+JOIN Planeta P ON P.Id_Astro = D.Planeta
+JOIN Orbita_Planeta OP ON OP.Planeta = P.Id_Astro
+JOIN Estrela E ON E.Id_Estrela = OP.Estrela
+JOIN Sistema S ON S.Estrela = E.Id_Estrela
+JOIN Participa PA ON PA.Faccao = F.Nome
+JOIN Comunidade C ON C.Especie = PA.Especie AND C.Nome = PA.Comunidade
+JOIN Habitacao H ON H.Comunidade = C.Nome AND H.Planeta = P.Id_Astro AND H.Especie = C.Especie AND H.DATA_INI <= TRUNC(SYSDATE) AND
+                    (H.DATA_FIM >= TRUNC(SYSDATE) OR H.DATA_FIM IS NULL)
+GROUP BY PA.Especie
+ORDER BY QTD_Habitantes DESC;
