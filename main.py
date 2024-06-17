@@ -2,27 +2,16 @@ from fastapi import FastAPI, Request, Form, Response
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse
+from starlette.status import HTTP_303_SEE_OTHER
 import repository.connection
+import data
 from models import Usuario
 
 app = FastAPI()
 
 usuario:Usuario
 
-origins = [
-    "http://localhost",
-    "http://localhost:8080",
-]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -43,14 +32,31 @@ async def handle_form(request: Request, response: Response, username: str = Form
         global usuario
         usuario = resultado
         
-        return RedirectResponse("/overview")
+        return RedirectResponse("/overview", status_code=HTTP_303_SEE_OTHER)
     else:
         return templates.TemplateResponse("index.html", {"request": request, "message": resultado})
 
-@app.post("/overview")
-async def read_overview(request: Request, response: Response):
+@app.get("/overview")
+async def read_overview(request: Request):
     return templates.TemplateResponse("overview.html", {"request": request, "usuario": usuario})
 
-@app.get("/action")
-async def action():
-    return {"message": "Ação executada!"}
+@app.get("/selecionar_acao/{cargo}")
+async def selecionar_action(request: Request, cargo: str):
+    cargo_upper = cargo.upper()
+    acoes_disponiveis = data.ACOES.get(cargo_upper, {})
+    return templates.TemplateResponse("selecionar_acoes.html", {"request": request, "usuario": usuario, "cargo": cargo, "acoes": acoes_disponiveis})
+
+
+@app.get("/acoes/{acao}")
+async def acoes(acao: str):
+    return {"message": f"Ação executada para o relatório: {acao}"}
+
+
+@app.get("/selecionar_relatorio")
+async def selecionar_relatorio(request: Request):
+    return templates.TemplateResponse("selecionar_relatorio.html", {"request": request, "usuario": usuario, "relatorios": data.RELATORIOS })
+
+@app.get("/relatorios/{relatorio}")
+async def relatorios(relatorio: int):
+    return {"message": f"Ação executada para o relatório: {relatorio}"}
+

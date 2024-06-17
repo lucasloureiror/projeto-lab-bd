@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link href="{{ url_for('static', path='/selecionar_relatorio.css') }}" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Dashboard</h1>
+            <div class="user-info">
+                <span>Bem-vindo, <strong>{{ usuario.nome }}</strong></span>
+            </div>
+        </div>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="/overview">Overview</a></li>
+            <li><a href="/selecionar_relatorio">Relatórios</a></li>
+        </ul>
+    </nav>
+    <main>
+        <section class="acoes">
+            <h2>Ações Disponíveis</h2>
+            <div class="cards">
+                {% for nome, id in acoes.items() %}
+                <div class="card">
+                    <h3>{{ nome }}</h3>
+                    <p>Descrição da ação {{ nome }}</p>
+                    <a href="{{ url_for('acoes', acao=id) }}" class="btn">Acessar Ação</a>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+</body>
+</html>
