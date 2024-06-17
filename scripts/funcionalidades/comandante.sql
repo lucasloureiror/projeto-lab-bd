@@ -10,7 +10,7 @@ CREATE OR REPLACE PACKAGE PAC_FUNC_COMANDANTE AS
 
     PROCEDURE incluir_propria_nacao(p_nome_federacao FEDERACAO.NOME%TYPE, p_id_lider LIDER.CPI%TYPE);
     PROCEDURE excluir_propria_nacao(p_nome_federacao FEDERACAO.NOME%TYPE, p_id_lider LIDER.CPI%TYPE);
-    PROCEDURE criar_federacao(p_federacao FEDERACAO%ROWTYPE, p_id_lider LIDER.CPI%TYPE);
+    PROCEDURE criar_federacao(p_nome FEDERACAO.NOME%TYPE, p_data_fund FEDERACAO.DATA_FUND%TYPE, p_id_lider LIDER.CPI%TYPE);
     PROCEDURE inserir_dominancia(p_id_planeta PLANETA.ID_ASTRO%TYPE, p_data_ini DATE, p_id_lider LIDER.CPI%TYPE);
 
 END PAC_FUNC_COMANDANTE;
@@ -95,7 +95,7 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_COMANDANTE AS
     END excluir_propria_nacao;
 
     /* Procedimento publico: Criar nova federacao, com a propria nacao */
-    PROCEDURE criar_federacao(p_federacao FEDERACAO%ROWTYPE, p_id_lider LIDER.CPI%TYPE) AS
+    PROCEDURE criar_federacao(p_nome FEDERACAO.NOME%TYPE, p_data_fund FEDERACAO.DATA_FUND%TYPE, p_id_lider LIDER.CPI%TYPE) AS
         v_propria_nacao NACAO%ROWTYPE;
         e_nacao_ja_tem_federacao EXCEPTION;
     BEGIN
@@ -109,11 +109,11 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_COMANDANTE AS
     
         -- Criar a nova federacao
         INSERT INTO FEDERACAO(NOME, DATA_FUND)
-        VALUES(p_federacao.NOME, p_federacao.DATA_FUND);
+        VALUES(p_nome, p_data_fund);
     
         -- Atualizar a nacao para associa-la a nova federacao
         UPDATE NACAO
-        SET FEDERACAO = p_federacao.NOME
+        SET FEDERACAO = p_nome
         WHERE NOME = v_propria_nacao.NOME;
     
         EXCEPTION
