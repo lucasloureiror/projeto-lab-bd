@@ -10,6 +10,7 @@ import models
 from models import Usuario
 import repository.connection
 import repository.funcionalidades.lider_faccao, repository.funcionalidades.cientista, repository.funcionalidades.comandante
+import repository.relatorios.cientista
 import repository.relatorios.comandante
 import repository.relatorios.lider_faccao
 import repository.relatorios.oficial
@@ -402,6 +403,19 @@ async def relatorios(relatorio: int, request: Request):
 
     elif relatorio == 8:
         relatorios, titulo_relatorio  = repository.relatorios.comandante.get_relatorio_potencial_expansao(usuario, 100000)
+    
+    elif relatorio == 9:
+        relatorios, titulo_relatorio  = repository.relatorios.cientista.get_relatorio_estrela()
+        show_next = True
+    
+    elif relatorio == 10:
+        relatorios, titulo_relatorio  = repository.relatorios.cientista.get_relatorio_planeta()
+        show_previous = True
+        show_next = True
+
+    elif relatorio == 11:
+        relatorios, titulo_relatorio  = repository.relatorios.cientista.get_relatorio_sistema()
+        show_previous = True
 
 
 

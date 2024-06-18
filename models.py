@@ -154,3 +154,62 @@ class RelatorioPotencialExpansao:
             "coord_y": self.coord_y,
             "coord_z": self.coord_z
         }
+    
+class RelatorioEstrela:
+    def __init__(self, id_estrela, nome, massa, classificacao, sistema_nome, qtd_planetas_orbitam, qtd_estrelas_orbitam, qtd_estrelas_orbita, x, y, z):
+        self.id_estrela = id_estrela
+        self.nome = nome
+        self.massa = massa
+        self.classificacao = classificacao
+        self.sistema_nome = sistema_nome
+        self.qtd_planetas_orbitam = qtd_planetas_orbitam
+        self.qtd_estrelas_orbitam = qtd_estrelas_orbitam
+        self.qtd_estrelas_orbita = qtd_estrelas_orbita
+        self.x = x
+        self.y = y
+        self.z = z
+
+    def to_dict(self):
+        return {
+            "id_estrela": self.id_estrela,
+            "nome": self.nome,
+            "massa": self.massa,
+            "classificacao": self.classificacao,
+            "sistema_nome": self.sistema_nome,
+            "qtd_planetas_orbitam": self.qtd_planetas_orbitam,
+            "qtd_estrelas_orbitam": self.qtd_estrelas_orbitam,
+            "qtd_estrelas_orbita": self.qtd_estrelas_orbita,
+            "x": self.x,
+            "y": self.y,
+            "z": self.z
+        }
+
+class RelatorioPlaneta:
+    def __init__(self, id_astro, massa, classificacao, sistema_nome, qtd_estrelas_orbita):
+        self.id_astro = id_astro
+        self.massa = massa
+        self.classificacao = classificacao
+        self.sistema_nome = sistema_nome
+        self.qtd_estrelas_orbita = qtd_estrelas_orbita
+    
+    def to_dict(self):
+        return {
+            "id_astro": self.id_astro,
+            "massa": self.massa,
+            "classificacao": self.classificacao,
+            "sistema_nome": self.sistema_nome,
+            "qtd_estrelas_orbita": self.qtd_estrelas_orbita
+        }
+
+class RelatorioSistema:
+    def __init__(self, nome, qtd_estrelas, qtd_planetas):
+        self.nome = nome
+        self.qtd_estrelas = qtd_estrelas
+        self.qtd_planetas = qtd_planetas
+
+    def to_dict(self):
+        return {
+            "nome": self.nome,
+            "qtd_estrelas": self.qtd_estrelas,
+            "qtd_planetas": self.qtd_planetas
+        }

@@ -12,7 +12,7 @@ RELATORIOS = {
     },
     "CIENTISTA": {
         "Relatório de corpos celestes": 9,
-        "Relatório de corpos celestes em uma distância especifica": 10
+        "Relatório de corpos celestes em uma distância especifica": 12
     }
 }
 
