@@ -120,3 +120,19 @@ tr:hover {
     color: #333;
     margin-top: 10px;
 }
+
+.button-container {
+    display: flex;
+    justify-content: space-between; /* Alinha os itens nas extremidades */
+    align-items: center;
+    margin-top: 20px;
+}
+
+.buttons {
+    display: flex;
+    gap: 10px; /* Espaçamento entre os botões */
+}
+
+#btn-voltar {
+    margin-top: 10px; /* Espaçamento adicional acima do botão Voltar */
+}

@@ -4,15 +4,15 @@ RELATORIOS = {
         "Relatório de Comunidades": 1
     },
     "OFICIAL": {
-        "Relatório de crescimento populacional": 2
+        "Relatório de crescimento populacional": 2 #Vai até o 6
     },
     "COMANDANTE": {
-        "Relatórios de planetas dominados": 3,
-        "Relatórios de planetas em janelas de tempo especificas": 4
+        "Relatórios de planetas dominados": 7,
+        "Relatórios de planetas em janelas de tempo especificas": 8
     },
     "CIENTISTA": {
-        "Relatório de corpos celestes": 5,
-        "Relatório de corpos celestes em uma distância especifica": 6
+        "Relatório de corpos celestes": 9,
+        "Relatório de corpos celestes em uma distância especifica": 10
     }
 }
 

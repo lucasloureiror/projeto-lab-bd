@@ -46,7 +46,20 @@
             {% else %}
                 <p>Nenhuma informação no relatório.</p>
             {% endif %}
-            <a href="/overview" class="btn">Voltar</a>
+            <div class="button-container">
+    <div class="left-button">
+        <a href="/overview" class="btn" id="btn-voltar">Voltar</a>
+    </div>
+    <div class="center-buttons">
+        {% if show_previous %}
+        <a href="/relatorios/{{ relatorio - 1 }}" class="btn">Relatório anterior</a>
+        {% endif %}
+        {% if show_next %}
+        <a href="/relatorios/{{ relatorio + 1 }}" class="btn">Próximo relatório</a>
+        {% endif %}
+    </div>
+</div>
+
         </section>
     </main>
 </body>

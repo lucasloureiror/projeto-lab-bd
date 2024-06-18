@@ -48,3 +48,66 @@ class RelatorioLider:
             "especie": self.especie,
             "qtd_habitantes": self.qtd_habitantes
         }
+    
+
+class RelatorioHabitantesGeral:
+    def __init__(self, nome: str, faccao: str, planeta: str, sistema: str, especie: str, qtd_habitantes: int):
+        self.nome = nome
+        self.faccao = faccao
+        self.planeta = planeta
+        self.sistema = sistema
+        self.especie = especie
+        self.qtd_habitantes = qtd_habitantes
+    def to_dict(self):
+        return {
+            "nome": self.nome,
+            "faccao": self.faccao,
+            "planeta": self.planeta,
+            "sistema": self.sistema,
+            "especie": self.especie,
+            "qtd_habitantes": self.qtd_habitantes
+        }
+
+class RelatorioHabitantesFaccao:
+    def __init__(self, faccao: str, qtd_habitantes: int):
+        self.faccao = faccao
+        self.qtd_habitantes = qtd_habitantes
+
+    def to_dict(self):
+        return {
+            "faccao": self.faccao,
+            "qtd_habitantes": self.qtd_habitantes
+        }
+
+class RelatorioHabitantesSistemas:
+    def __init__(self, sistema: str, qtd_habitantes: int):
+        self.sistema = sistema
+        self.qtd_habitantes = qtd_habitantes
+
+    def to_dict(self):
+        return {
+            "sistema": self.sistema,
+            "qtd_habitantes": self.qtd_habitantes
+        }
+
+class RelatorioHabitantesPlanetas:
+    def __init__(self, planeta: str, qtd_habitantes: int):
+        self.planeta = planeta
+        self.qtd_habitantes = qtd_habitantes
+
+    def to_dict(self):
+        return {
+            "planeta": self.planeta,
+            "qtd_habitantes": self.qtd_habitantes
+        }
+
+class RelatorioHabitantesEspecies:
+    def __init__(self, especie: str, qtd_habitantes: int):
+        self.especie = especie
+        self.qtd_habitantes = qtd_habitantes
+
+    def to_dict(self):
+        return {
+            "especie": self.especie,
+            "qtd_habitantes": self.qtd_habitantes
+        }
