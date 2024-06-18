@@ -1,11 +1,10 @@
+# Funcionalidades de gerenciamento para usuários do tipo "Líder de Facção"
 import oracledb
 from models import Usuario
 from repository.connection import get_connection
 
 NOVO_LOG = "PROC_INSERIR_LOG"
-PACOTE_FUNC = "PAC_FUNC_LIDER_FACCAO"
-
-# Funcionalidades de gerenciamento para usuários do tipo "Líder de Facção"
+PACOTE = "PAC_FUNC_LIDER_FACCAO"
 
 # Alterar nome da própria facção da qual é líder
 def alterar_nome_faccao(novo_nome_faccao:str, usuario:Usuario):
@@ -15,7 +14,7 @@ def alterar_nome_faccao(novo_nome_faccao:str, usuario:Usuario):
         cursor = connection.cursor()
 
         try:
-            cursor.callproc(PACOTE_FUNC + ".ALTERAR_NOME_FACCAO", [novo_nome_faccao, usuario.username])
+            cursor.callproc(PACOTE + ".ALTERAR_NOME_FACCAO", [novo_nome_faccao, usuario.username])
 
             mensagem_log = "Nome da facção do líder alterado para '" + novo_nome_faccao + "'"
             cursor.callproc(NOVO_LOG, [usuario.user_id, mensagem_log])
@@ -56,7 +55,7 @@ def indicar_novo_lider(id_novo_lider:str, usuario:Usuario):
         cursor = connection.cursor()
 
         try:
-            cursor.callproc(PACOTE_FUNC + ".INDICAR_NOVO_LIDER", [id_novo_lider, usuario.username])
+            cursor.callproc(PACOTE + ".INDICAR_NOVO_LIDER", [id_novo_lider, usuario.username])
 
             mensagem_log = "Líder '" + id_novo_lider + "' indicado como o novo líder da facção"
             cursor.callproc(NOVO_LOG, [usuario.user_id, mensagem_log])
@@ -99,7 +98,7 @@ def credenciar_nova_comunidade(nome_especie:str, nome_comunidade:str, usuario:Us
         cursor = connection.cursor()
 
         try:
-            cursor.callproc(PACOTE_FUNC + ".CREDENCIAR_NOVA_COMUNIDADE", [nome_especie, nome_comunidade, usuario.username])
+            cursor.callproc(PACOTE + ".CREDENCIAR_NOVA_COMUNIDADE", [nome_especie, nome_comunidade, usuario.username])
 
             mensagem_log = "Nova comunidade '{" + nome_especie + ", " + nome_comunidade + "}' credenciada na facção do líder"
             cursor.callproc(NOVO_LOG, [usuario.user_id, mensagem_log])
@@ -143,7 +142,7 @@ def remover_faccao_de_nacao(nome_faccao:str, nome_nacao:str, usuario:Usuario):
         cursor = connection.cursor()
 
         try:
-            cursor.callproc(PACOTE_FUNC + ".REMOVER_FACCAO_DE_NACAO", [nome_faccao, nome_nacao])
+            cursor.callproc(PACOTE + ".REMOVER_FACCAO_DE_NACAO", [nome_faccao, nome_nacao])
 
             mensagem_log = "Facção '" + nome_faccao + "' foi removida da nação '" + nome_nacao + "' pelo líder"
             cursor.callproc(NOVO_LOG, [usuario.user_id, mensagem_log])
@@ -175,7 +174,3 @@ def remover_faccao_de_nacao(nome_faccao:str, nome_nacao:str, usuario:Usuario):
 
     except oracledb.DatabaseError as e:
         return "Conexão falhou"
-
-
-# Relatórios para usuários do tipo "Líder de Facção"
-

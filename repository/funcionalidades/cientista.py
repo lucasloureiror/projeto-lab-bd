@@ -1,11 +1,10 @@
+# Funcionalidades de gerenciamento para usuários do tipo "Cientista"
 import oracledb
 from models import Usuario, Estrela
 from repository.connection import get_connection
 
 NOVO_LOG = "PROC_INSERIR_LOG"
-PACOTE_FUNC = "PAC_FUNC_CIENTISTA"
-
-# Funcionalidades de gerenciamento para usuários do tipo "Cientista"
+PACOTE = "PAC_FUNC_CIENTISTA"
 
 # Criar estrela
 def criar_estrela(estrela:Estrela, usuario:Usuario):
@@ -15,7 +14,7 @@ def criar_estrela(estrela:Estrela, usuario:Usuario):
         cursor = connection.cursor()
 
         try:
-            cursor.callproc(PACOTE_FUNC + ".CRIAR_ESTRELA", [estrela.id, estrela.nome, estrela.classificacao, estrela.massa, estrela.x, estrela.y, estrela.z])
+            cursor.callproc(PACOTE + ".CRIAR_ESTRELA", [estrela.id, estrela.nome, estrela.classificacao, estrela.massa, estrela.x, estrela.y, estrela.z])
 
             mensagem_log = f"Estrela '{estrela.id}' criada --> {estrela}"
             cursor.callproc(NOVO_LOG, [usuario.user_id, mensagem_log])
@@ -59,7 +58,7 @@ def buscar_estrela(id_estrela:str, usuario:Usuario):
 
         try:
             estrela_rowtype = connection.gettype('ESTRELA%ROWTYPE')
-            retorno = cursor.callfunc(PACOTE_FUNC + ".BUSCAR_ESTRELA", estrela_rowtype, [id_estrela])
+            retorno = cursor.callfunc(PACOTE + ".BUSCAR_ESTRELA", estrela_rowtype, [id_estrela])
             estrela = Estrela(
                 retorno.ID_ESTRELA,
                 retorno.NOME,
@@ -108,7 +107,7 @@ def atualizar_estrela(estrela:Estrela, usuario:Usuario):
         cursor = connection.cursor()
 
         try:
-            cursor.callproc(PACOTE_FUNC + ".ATUALIZAR_ESTRELA", [estrela.id, estrela.nome, estrela.classificacao, estrela.massa, estrela.x, estrela.y, estrela.z])
+            cursor.callproc(PACOTE + ".ATUALIZAR_ESTRELA", [estrela.id, estrela.nome, estrela.classificacao, estrela.massa, estrela.x, estrela.y, estrela.z])
 
             mensagem_log = f"Estrela '{estrela.id}' atualizada --> {estrela}"
             cursor.callproc(NOVO_LOG, [usuario.user_id, mensagem_log])
@@ -150,89 +149,7 @@ def remover_estrela(id_estrela:str, usuario:Usuario):
         cursor = connection.cursor()
 
         try:
-            cursor.callproc(PACOTE_FUNC + ".REMOVER_ESTRELA", [id_estrela])
-
-            mensagem_log = f"Estrela '{id_estrela}' removida"
-            cursor.callproc(NOVO_LOG, [usuario.user_id, mensagem_log])
-
-            connection.commit()
-            print(mensagem_log)
-
-        except oracledb.DatabaseError as e:
-            error, = e.args
-            error, = e.args
-            if error.code == 20001:
-                mensagem = "Estrela não encontrada."
-            else:
-                mensagem = f"{error.code}: {error.message}"
-            
-            connection.rollback()
-
-            mensagem_log = f"Tentativa de remover estrela '{id_estrela}' --> ERRO: '{mensagem}'"
-            cursor.callproc(NOVO_LOG, [usuario.user_id, mensagem_log])
-            connection.commit()
-
-            print(mensagem)
-            return mensagem
-        
-        finally:
-            cursor.close()
-            connection.close()
-
-    except oracledb.DatabaseError as e:
-        return "Conexão falhou"
-
-# Atualizar estrela por id
-def atualizar_estrela(estrela:Estrela, usuario:Usuario):
-    print(f"ATUALIZAR ESTRELA --> Usuário {usuario.user_id}")
-    try:
-        connection = get_connection()
-        cursor = connection.cursor()
-
-        try:
-            cursor.callproc(PACOTE_FUNC + ".ATUALIZAR_ESTRELA", [estrela.id, estrela.nome, estrela.classificacao, estrela.massa, estrela.x, estrela.y, estrela.z])
-
-            mensagem_log = f"Estrela '{estrela.id}' atualizada --> {estrela}"
-            cursor.callproc(NOVO_LOG, [usuario.user_id, mensagem_log])
-
-            connection.commit()
-            print(mensagem_log)
-
-        except oracledb.DatabaseError as e:
-            error, = e.args
-            error, = e.args
-            if error.code == 20001:
-                mensagem = "Estrela não encontrada."
-            elif error.code == 20004:
-                mensagem = "Os atributos 'ID_ESTRELA', 'X', 'Y' e 'Z' não podem ser nulos."
-            else:
-                mensagem = f"{error.code}: {error.message}"
-            
-            connection.rollback()
-
-            mensagem_log = f"Tentativa de atualizar estrela '{estrela.id}' --> ERRO: '{mensagem}'"
-            cursor.callproc(NOVO_LOG, [usuario.user_id, mensagem_log])
-            connection.commit()
-
-            print(mensagem)
-            return mensagem
-        
-        finally:
-            cursor.close()
-            connection.close()
-
-    except oracledb.DatabaseError as e:
-        return "Conexão falhou"
-
-# Remover estrela por id
-def remover_estrela(id_estrela:str, usuario:Usuario):
-    print(f"REMOVER ESTRELA --> Usuário {usuario.user_id}")
-    try:
-        connection = get_connection()
-        cursor = connection.cursor()
-
-        try:
-            cursor.callproc(PACOTE_FUNC + ".REMOVER_ESTRELA", [id_estrela])
+            cursor.callproc(PACOTE + ".REMOVER_ESTRELA", [id_estrela])
 
             mensagem_log = f"Estrela '{id_estrela}' removida"
             cursor.callproc(NOVO_LOG, [usuario.user_id, mensagem_log])

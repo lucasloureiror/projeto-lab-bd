@@ -1,12 +1,11 @@
+# Funcionalidades de gerenciamento para usuários do tipo "Comandante"
 import oracledb
 import utils
 from models import Usuario
 from repository.connection import get_connection
 
 NOVO_LOG = "PROC_INSERIR_LOG"
-PACOTE_FUNC = "PAC_FUNC_COMANDANTE"
-
-# Funcionalidades de gerenciamento para usuários do tipo "Comandante"
+PACOTE = "PAC_FUNC_COMANDANTE"
 
 # Incluir a própria nação em uma federação existente
 def incluir_propria_nacao(nome_federacao:str, usuario:Usuario):
@@ -16,7 +15,7 @@ def incluir_propria_nacao(nome_federacao:str, usuario:Usuario):
         cursor = connection.cursor()
 
         try:
-            cursor.callproc(PACOTE_FUNC + ".INCLUIR_PROPRIA_NACAO", [nome_federacao, usuario.username])
+            cursor.callproc(PACOTE + ".INCLUIR_PROPRIA_NACAO", [nome_federacao, usuario.username])
 
             mensagem_log = f"Nação do líder incluída na federação '{nome_federacao}'"
             cursor.callproc(NOVO_LOG, [usuario.user_id, mensagem_log])
@@ -66,7 +65,7 @@ def excluir_propria_nacao(nome_federacao:str, usuario:Usuario):
         cursor = connection.cursor()
 
         try:
-            cursor.callproc(PACOTE_FUNC + ".EXCLUIR_PROPRIA_NACAO", [nome_federacao, usuario.username])
+            cursor.callproc(PACOTE + ".EXCLUIR_PROPRIA_NACAO", [nome_federacao, usuario.username])
 
             mensagem_log = f"Nação do líder excluída da federação '{nome_federacao}'"
             cursor.callproc(NOVO_LOG, [usuario.user_id, mensagem_log])
@@ -113,7 +112,7 @@ def criar_federacao(nome_federacao:str, data_fund:utils.Data, usuario:Usuario):
 
         try:
             data_fund = utils.converter_data(data_fund)
-            cursor.callproc(PACOTE_FUNC + ".CRIAR_FEDERACAO", [nome_federacao, data_fund, usuario.username])
+            cursor.callproc(PACOTE + ".CRIAR_FEDERACAO", [nome_federacao, data_fund, usuario.username])
 
             mensagem_log = f"Federação '{nome_federacao}' criada com a nação do líder"
             cursor.callproc(NOVO_LOG, [usuario.user_id, mensagem_log])
@@ -164,7 +163,7 @@ def inserir_dominancia(id_planeta:str, data_ini:utils.Data, usuario:Usuario):
 
         try:
             data_ini = utils.converter_data(data_ini)
-            cursor.callproc(PACOTE_FUNC + ".INSERIR_DOMINANCIA", [id_planeta, data_ini, usuario.username])
+            cursor.callproc(PACOTE + ".INSERIR_DOMINANCIA", [id_planeta, data_ini, usuario.username])
 
             mensagem_log = f"Inserida dominância da nação do líder sobre o planeta '{id_planeta}'"
             cursor.callproc(NOVO_LOG, [usuario.user_id, mensagem_log])
@@ -203,4 +202,3 @@ def inserir_dominancia(id_planeta:str, data_ini:utils.Data, usuario:Usuario):
 
     except oracledb.DatabaseError as e:
         return "Conexão falhou"
-
