@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultado da Operação</title>
+    <link href="{{ url_for('static', path='/acoes_resultado.css') }}" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Dashboard</h1>
+            <div class="user-info">
+                <span>Bem-vindo, <strong>{{ usuario.nome }}</strong></span>
+            </div>
+        </div>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="/overview">Overview</a></li>
+            <li><a href="/selecionar_relatorio">Relatórios</a></li>
+        </ul>
+    </nav>
+    <main>
+        <section class="resultado">
+            <h2>Resultado da Operação</h2>
+            <p>{{ resultado }}</p>
+            <a href="/overview" class="btn">Voltar</a>
+        </section>
+    </main>
+</body>
+</html>

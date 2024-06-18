@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultado do Relatório</title>
+    <link href="{{ url_for('static', path='/relatorios_resultado.css') }}" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Dashboard</h1>
+            <div class="user-info">
+                <span>Bem-vindo, <strong>{{ usuario.nome }}</strong></span>
+            </div>
+        </div>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="/overview">Overview</a></li>
+            <li><a href="/selecionar_relatorio">Relatórios</a></li>
+        </ul>
+    </nav>
+    <main>
+        <section class="resultado">
+            <h2>Resultado da solicitação de relatório</h2>
+            {% if relatorios %}
+                <table>
+                    <thead>
+                        <tr>
+                            {% for key in relatorios[0].to_dict().keys() %}
+                            <th scope="col">{{ key | replace("_", " ") | capitalize }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for relatorio in relatorios %}
+                        <tr>
+                            {% for value in relatorio.to_dict().values() %}
+                            <td>{{ value }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>Nenhuma informação no relatório.</p>
+            {% endif %}
+            <a href="/overview" class="btn">Voltar</a>
+        </section>
+    </main>
+</body>
+</html>

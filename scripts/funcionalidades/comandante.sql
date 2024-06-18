@@ -10,7 +10,7 @@ CREATE OR REPLACE PACKAGE PAC_FUNC_COMANDANTE AS
 
     PROCEDURE incluir_propria_nacao(p_nome_federacao FEDERACAO.NOME%TYPE, p_id_lider LIDER.CPI%TYPE);
     PROCEDURE excluir_propria_nacao(p_nome_federacao FEDERACAO.NOME%TYPE, p_id_lider LIDER.CPI%TYPE);
-    PROCEDURE criar_federacao(p_federacao FEDERACAO%ROWTYPE, p_id_lider LIDER.CPI%TYPE);
+    PROCEDURE criar_federacao(p_nome FEDERACAO.NOME%TYPE, p_data_fund FEDERACAO.DATA_FUND%TYPE, p_id_lider LIDER.CPI%TYPE);
     PROCEDURE inserir_dominancia(p_id_planeta PLANETA.ID_ASTRO%TYPE, p_data_ini DATE, p_id_lider LIDER.CPI%TYPE);
 
 END PAC_FUNC_COMANDANTE;
@@ -25,11 +25,17 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_COMANDANTE AS
     /* Procedimento publico: Incluir a propria nacao em uma federacao existente */
     PROCEDURE incluir_propria_nacao(p_nome_federacao FEDERACAO.NOME%TYPE, p_id_lider LIDER.CPI%TYPE) AS
         v_propria_nacao NACAO%ROWTYPE;
+        e_federacao_nula EXCEPTION;
         e_nacao_ja_inclusa EXCEPTION;
         e_nacao_ja_tem_federacao EXCEPTION;
         e_federacao_nao_existe EXCEPTION;
         PRAGMA EXCEPTION_INIT(e_federacao_nao_existe, -02291);
-    BEGIN        
+    BEGIN
+        -- Verifiacar se a federacao foi informada
+        IF p_nome_federacao IS NULL THEN
+            RAISE e_federacao_nula;
+        END IF;
+        
         -- Identificar a nacao do lider
         v_propria_nacao := BUSCAR_PROPRIA_NACAO(p_id_lider);
         
@@ -49,6 +55,8 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_COMANDANTE AS
         WHERE NOME = v_propria_nacao.NOME;
         
         EXCEPTION
+            WHEN e_federacao_nula THEN
+                RAISE_APPLICATION_ERROR(-20004, 'O nome da federacao que sera incluida nao pode ser nulo.');
             WHEN e_nacao_ja_inclusa THEN
                 RAISE_APPLICATION_ERROR(-20005, 'Sua nacao ja faz parte dessa federacao.');
             WHEN e_nacao_ja_tem_federacao THEN 
@@ -63,7 +71,13 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_COMANDANTE AS
         v_propria_nacao NACAO%ROWTYPE;
         e_nacao_nao_tem_federacao EXCEPTION;
         e_nacao_nao_inclusa EXCEPTION;
-    BEGIN        
+        e_federacao_nula EXCEPTION;
+    BEGIN
+        -- Verificar se a federacao foi informada
+        IF p_nome_federacao IS NULL THEN
+            RAISE e_federacao_nula;
+        END IF;
+    
         -- Identificar a nacao do lider
         v_propria_nacao := BUSCAR_PROPRIA_NACAO(p_id_lider);
         
@@ -88,6 +102,8 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_COMANDANTE AS
         END IF;
         
         EXCEPTION
+            WHEN e_federacao_nula THEN
+                RAISE_APPLICATION_ERROR(-20004, 'O nome da federacao que sera excluida nao pode ser nulo.');
             WHEN e_nacao_nao_tem_federacao THEN
                 RAISE_APPLICATION_ERROR(-20005, 'Sua nacao nao faz parte de nenhuma federacao.');
             WHEN e_nacao_nao_inclusa THEN
@@ -95,7 +111,7 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_COMANDANTE AS
     END excluir_propria_nacao;
 
     /* Procedimento publico: Criar nova federacao, com a propria nacao */
-    PROCEDURE criar_federacao(p_federacao FEDERACAO%ROWTYPE, p_id_lider LIDER.CPI%TYPE) AS
+    PROCEDURE criar_federacao(p_nome FEDERACAO.NOME%TYPE, p_data_fund FEDERACAO.DATA_FUND%TYPE, p_id_lider LIDER.CPI%TYPE) AS
         v_propria_nacao NACAO%ROWTYPE;
         e_nacao_ja_tem_federacao EXCEPTION;
     BEGIN
@@ -109,11 +125,11 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_COMANDANTE AS
     
         -- Criar a nova federacao
         INSERT INTO FEDERACAO(NOME, DATA_FUND)
-        VALUES(p_federacao.NOME, p_federacao.DATA_FUND);
+        VALUES(p_nome, p_data_fund);
     
         -- Atualizar a nacao para associa-la a nova federacao
         UPDATE NACAO
-        SET FEDERACAO = p_federacao.NOME
+        SET FEDERACAO = p_nome
         WHERE NOME = v_propria_nacao.NOME;
     
         EXCEPTION
