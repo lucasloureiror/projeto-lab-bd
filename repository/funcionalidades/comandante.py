@@ -119,30 +119,35 @@ def criar_federacao(nome_federacao:str, data_fund:utils.Data, usuario:Usuario):
         except oracledb.DatabaseError as e:
             error, = e.args
             if error.code == 20001:
-                mensagem = "ERRO: Líder não encontrado."
+                mensagem_erro = "ERRO: Líder não encontrado."
             elif error.code == 20003:
-                mensagem = "ERRO: Federação já existe, altere o nome e tente novamente."
+                mensagem_erro = "ERRO: Federação já existe, altere o nome e tente novamente."
             elif error.code == 20004:
-                mensagem = "ERRO: O nome da federação e a data de fundação não podem ser nulos."
+                mensagem_erro = "ERRO: O nome da federação e a data de fundação não podem ser nulos."
             elif error.code == 20005:
-                mensagem = "ERRO: Sua nação está atualmente incluída em outra federação. Exclua essa associação e tente novamente."
+                mensagem_erro = "ERRO: Sua nação está atualmente incluída em outra federação. Exclua essa associação e tente novamente."
+            elif error.code == 12899 and ("maximum: 15" in error.message):
+                mensagem_erro = "ERRO: O nome de federação informado é muito grande. Escolha um nome com até 15 caracteres e tente novamente."
             else:
-                mensagem = f"{error.message}"
+                mensagem_erro = f"{error.message}"
 
             connection.rollback()
 
-            mensagem_log = f"Tentativa de criar a federação '{nome_federacao}' com a nação do líder --> {mensagem}"
+            mensagem_log = f"Tentativa de criar a federação '{nome_federacao}' com a nação do líder --> {mensagem_erro}"
+            mensagem_log = utils.ajustar_mensagem_log(mensagem_log)
             cursor.callproc(NOVO_LOG, [usuario.user_id, mensagem_log])
             connection.commit()
 
             print(error.message)
-            return mensagem
+            return mensagem_erro
         
         finally:
             cursor.close()
             connection.close()
 
     except oracledb.DatabaseError as e:
+        error, = e.args
+        print(error.message)
         return "Conexão falhou"
 
 # Inserir nova dominância de um planeta que não está sendo dominado por ninguém
@@ -169,7 +174,7 @@ def inserir_dominancia(id_planeta:str, data_ini:utils.Data, usuario:Usuario):
             elif error.code == 20001:
                 mensagem = "ERRO: Planeta não encontrado."
             elif error.code == 20004:
-                mensagem = "ERRO: Os atributos 'PLANETA', 'NACAO' e 'DATA_INI' não podem ser nulos."
+                mensagem = "ERRO: O id do planeta e a data de início não podem ser nulos."
             elif error.code == 20005:
                 mensagem = "ERRO: Esse planeta já esta sendo dominado."
             else:
