@@ -6,9 +6,11 @@ from starlette.responses import RedirectResponse
 from starlette.status import HTTP_303_SEE_OTHER
 import datetime
 import repository.connection, repository.lider_faccao, repository.cientista, repository.comandante
+import repository.relatorios
 import data
 import models
 from models import Usuario
+import repository.relatorios.lider_faccao
 
 app = FastAPI()
 
@@ -358,6 +360,12 @@ async def selecionar_relatorio(request: Request):
     return templates.TemplateResponse("selecionar_relatorio.html", {"request": request, "usuario": usuario, "relatorios": data.RELATORIOS })
 
 @app.get("/relatorios/{relatorio}")
-async def relatorios(relatorio: int):
-    return {"message": f"Ação executada para o relatório: {relatorio}"}
+async def relatorios(relatorio: int, request: Request):
+
+    if relatorio == 1:
+        relatorios = repository.relatorios.lider_faccao.get_relatorio_lider
+
+
+
+    return templates.TemplateResponse("relatorios_resultado.html", {"request" : request, "relatorios": relatorios, "usuario": usuario})
 
