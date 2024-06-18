@@ -115,14 +115,16 @@ def credenciar_nova_comunidade(nome_especie:str, nome_comunidade:str, usuario:Us
 
         except oracledb.DatabaseError as e:
             error, = e.args
-            if error.code == 20001:
-                mensagem_erro = f"{error.code}: {error.message}"
+            if error.code == 20001 and ("Lider" in error.message):
+                mensagem_erro = "ERRO: Líder de facção não encontrado."
+            elif error.code == 20001:
+                mensagem_erro = "ERRO: Comunidade não encontrada."
             elif error.code == 20003:
-                mensagem_erro = "Comunidade já credenciada na sua facção, altere a comunidade e tente novamente."
+                mensagem_erro = "ERRO: Comunidade já credenciada na sua facção, altere a comunidade e tente novamente."
             elif error.code == 20004:
-                mensagem_erro = "Os atributos 'ESPECIE' e 'COMUNIDADE' não podem ser nulos."
+                mensagem_erro = "ERRO: Os atributos 'ESPECIE' e 'COMUNIDADE' não podem ser nulos."
             elif error.code == 20005:
-                mensagem_erro = "Somente comunidades que habitam um planeta dominado por uma nação associada à sua facção podem ser credenciadas."
+                mensagem_erro = "ERRO: Somente comunidades que habitam um planeta dominado por uma nação associada à sua facção podem ser credenciadas."
             else:
                 mensagem_erro = f"{error.message}"
 
@@ -160,10 +162,12 @@ def remover_faccao_de_nacao(nome_faccao:str, nome_nacao:str, usuario:Usuario):
 
         except oracledb.DatabaseError as e:
             error, = e.args
-            if error.code == 20001:
-                mensagem_erro = f"{error.code}: {error.message}"
+            if error.code == 20001 and ("Faccao" in error.message):
+                mensagem_erro = "ERRO: Facção não encontrada."
+            elif error.code == 20001:
+                mensagem_erro = "ERRO: Associação de nação-facção não encontrada."
             elif error.code == 20005:
-                mensagem_erro = "O líder da facção '" + nome_faccao + "' pertence a nação '" + nome_nacao + "' e, portanto, tal facção nao pode ser removida dessa nação."
+                mensagem_erro = "ERRO: O líder da facção '" + nome_faccao + "' pertence a nação '" + nome_nacao + "' e, portanto, tal facção nao pode ser removida dessa nação."
             else:
                 mensagem_erro = f"{error.message}"
 
