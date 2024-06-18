@@ -99,3 +99,9 @@ def buscar_estrela(id_estrela:str, usuario:Usuario):
 
     except oracledb.DatabaseError as e:
         return "Conexão falhou"
+
+def atualizar_estrela(estrela:Estrela, usuario:Usuario):
+    ...
+
+def remover_estrela(id_estrela:str, usuario:Usuario):
+    ...
