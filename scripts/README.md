@@ -221,3 +221,41 @@ Inclui as seguintes funções/procedimentos:
     1. `ORA-20001` - Facção não encontrada. 
     2. `ORA-20001` - Associação de nação-facção não encontrada.
     3. `ORA-20005` - O líder da facção "[nome-faccao]" pertence a nação "[nome-nacao]" e, portanto, tal facção nao pode ser removida dessa nação.
+
+## Relatorios_Lider_de_Faccao
+Inclui as seguintes funções/procedimentos:
+1. `Gerar_Relatorio(lider_logado, ordenar_por)`
+
+### 1. Gerar_Relatorio
+- **Implementação**: `relatorios_lider.sql`
+- **Parâmetros**: `lider_logado lider%ROWTYPE`, `ordenar_por VARCHAR2`
+- **Descrição**: Gera um relatório mostrando informações de todas as comunidades da Facção comandada pelo lider passado, e agrupa pelo atributo passo no segundo parâmetro, podendo ser: NACAO, SISTEMA, ESPECIE ou PLANETA.
+- **Objetivo**: Permitir que qualquer lider de facção gere relatórios que possibilitem acompanhar suas comunidades.
+
+## Relatorios_Oficial
+Inclui as seguintes funções:
+1. `Gerar_Relatorio_Habitantes_Geral(lider_logado)`
+2. `Gerar_Relatorio_Habitantes_Faccao(lider_logado)`
+3. `Gerar_Relatorio_Habitantes_Sistemas(lider_logado)`
+4. `Gerar_Relatorio_Habitantes_Planetas(lider_logado)`
+5. `Gerar_Relatorio_Habitantes_Especies(lider_logado)`
+
+### 1. Gerar_Relatorio_Habitantes_Geral
+- **Implementação**: `relatorios_oficial.sql`
+- **Parâmetros**: `lider_logado lider%ROWTYPE`
+- **Descrição**: Gera um relatório mostrando informações de todas as comunidades da Nação do lider passado.
+
+### 2. Gerar_Relatorio_Habitantes_Faccao
+- **Implementação**: `relatorios_oficial.sql`
+- **Parâmetros**: `lider_logado lider%ROWTYPE`
+- **Descrição**: Gera um relatório mostrando a quantidade de habitantes em comunidades onde cada facção que se relaciona com a nação do lider passado está presente.
+
+### 3. Gerar_Relatorio_Habitantes_Sistemas
+- **Implementação**: `relatorios_oficial.sql`
+- **Parâmetros**: `lider_logado lider%ROWTYPE`
+- **Descrição**: Gera um relatório mostrando a quantidade de habitantes em cada sistema em que a nação do lider está presente.
+
+### 4. Gerar_Relatorio_Habitantes_Especies
+- **Implementação**: `relatorios_oficial.sql`
+- **Parâmetros**: `lider_logado lider%ROWTYPE`
+- **Descrição**: Gera um relatório mostrando a quantidade de habitantes de cada espécie na nação do lider.
