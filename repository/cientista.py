@@ -17,7 +17,7 @@ def criar_estrela(estrela:Estrela, usuario:Usuario):
         try:
             cursor.callproc(PACOTE_FUNC + ".CRIAR_ESTRELA", [estrela.id, estrela.nome, estrela.classificacao, estrela.massa, estrela.x, estrela.y, estrela.z])
 
-            mensagem_log = f"Estrela '{estrela.id}' criada"
+            mensagem_log = f"Estrela '{estrela.id}' criada --> {estrela}"
             cursor.callproc(NOVO_LOG, [usuario.user_id, mensagem_log])
 
             connection.commit()
@@ -101,7 +101,46 @@ def buscar_estrela(id_estrela:str, usuario:Usuario):
         return "Conexão falhou"
 
 # Atualizar estrela por id
+def atualizar_estrela(estrela:Estrela, usuario:Usuario):
+    print(f"ATUALIZAR ESTRELA --> Usuário {usuario.user_id}")
+    try:
+        connection = get_connection()
+        cursor = connection.cursor()
 
+        try:
+            cursor.callproc(PACOTE_FUNC + ".ATUALIZAR_ESTRELA", [estrela.id, estrela.nome, estrela.classificacao, estrela.massa, estrela.x, estrela.y, estrela.z])
+
+            mensagem_log = f"Estrela '{estrela.id}' atualizada --> {estrela}"
+            cursor.callproc(NOVO_LOG, [usuario.user_id, mensagem_log])
+
+            connection.commit()
+            print(mensagem_log)
+
+        except oracledb.DatabaseError as e:
+            error, = e.args
+            error, = e.args
+            if error.code == 20001:
+                mensagem = "Estrela não encontrada."
+            elif error.code == 20004:
+                mensagem = "Os atributos 'ID_ESTRELA', 'X', 'Y' e 'Z' não podem ser nulos."
+            else:
+                mensagem = f"{error.code}: {error.message}"
+            
+            connection.rollback()
+
+            mensagem_log = f"Tentativa de atualizar estrela '{estrela.id}' --> ERRO: '{mensagem}'"
+            cursor.callproc(NOVO_LOG, [usuario.user_id, mensagem_log])
+            connection.commit()
+
+            print(mensagem)
+            return mensagem
+        
+        finally:
+            cursor.close()
+            connection.close()
+
+    except oracledb.DatabaseError as e:
+        return "Conexão falhou"
 
 # Remover estrela por id
 def remover_estrela(id_estrela:str, usuario:Usuario):
