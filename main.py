@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.responses import RedirectResponse
 from starlette.status import HTTP_303_SEE_OTHER
-import datetime
+import utils
 import data
 import models
 from models import Usuario
@@ -309,10 +309,12 @@ async def processar_acao(request: Request, acao: str):
         result = repository.funcionalidades.comandante.excluir_propria_nacao(form_dict["nome_federacao"], usuario)
     
     elif acao == "criar uma nova federação com sua nação":
-        result = repository.funcionalidades.comandante.criar_federacao(form_dict["nome_federacao"], datetime.date(int(form_dict["ano"]), int(form_dict["mes"]), int(form_dict["dia"])), usuario)
+        data_fund = utils.Data(form_dict["dia"], form_dict["mes"], form_dict["ano"])
+        result = repository.funcionalidades.comandante.criar_federacao(form_dict["nome_federacao"], data_fund, usuario)
     
     elif acao == "inserir uma nova dominância em um planeta":
-        result = repository.funcionalidades.comandante.inserir_dominancia(form_dict["id_planeta"], datetime.date(int(form_dict["ano"]), int(form_dict["mes"]), int(form_dict["dia"])), usuario)
+        data_ini = utils.Data(form_dict["dia"], form_dict["mes"], form_dict["ano"])
+        result = repository.funcionalidades.comandante.inserir_dominancia(form_dict["id_planeta"], data_ini, usuario)
 
 
     #FUNCIONALIDADES DE CIENTISTA
