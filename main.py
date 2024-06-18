@@ -10,6 +10,7 @@ import models
 from models import Usuario
 import repository.connection
 import repository.funcionalidades.lider_faccao, repository.funcionalidades.cientista, repository.funcionalidades.comandante
+import repository.relatorios.comandante
 import repository.relatorios.lider_faccao
 import repository.relatorios.oficial
 
@@ -394,6 +395,13 @@ async def relatorios(relatorio: int, request: Request):
     elif relatorio == 6: #Espécie 
         relatorios, titulo_relatorio  = repository.relatorios.oficial.get_relatorio_habitantes_especies(usuario)
         show_previous = True
+
+    #RELATÓRIOS COMANDANTE
+    elif relatorio == 7:
+        relatorios, titulo_relatorio  = repository.relatorios.comandante.get_relatorio_dominacao(usuario)
+
+    elif relatorio == 8:
+        relatorios, titulo_relatorio  = repository.relatorios.comandante.get_relatorio_potencial_expansao(usuario, 100000)
 
 
 

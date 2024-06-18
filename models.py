@@ -111,3 +111,46 @@ class RelatorioHabitantesEspecies:
             "especie": self.especie,
             "qtd_habitantes": self.qtd_habitantes
         }
+    
+
+class RelatorioDominacao:
+    def __init__(self, id_planeta, nacao_dominante, data_ini, data_fim, qtd_comunidades, qtd_especies, total_habitantes, qtd_faccoes, faccao_majoritaria):
+        self.id_planeta = id_planeta
+        self.nacao_dominante = nacao_dominante
+        self.data_ini = data_ini
+        self.data_fim = data_fim
+        self.qtd_comunidades = qtd_comunidades
+        self.qtd_especies = qtd_especies
+        self.total_habitantes = total_habitantes
+        self.qtd_faccoes = qtd_faccoes
+        self.faccao_majoritaria = faccao_majoritaria
+
+    def to_dict(self):
+        return {
+            "id_planeta": self.id_planeta,
+            "nacao_dominante": self.nacao_dominante,
+            "data_ini": self.data_ini,
+            "data_fim": self.data_fim,
+            "qtd_comunidades": self.qtd_comunidades,
+            "qtd_especies": self.qtd_especies,
+            "total_habitantes": self.total_habitantes,
+            "qtd_faccoes": self.qtd_faccoes,
+            "faccao_majoritaria": self.faccao_majoritaria
+        }
+
+class RelatorioPotencialExpansao:
+    def __init__(self, planeta, estrela, coord_x, coord_y, coord_z):
+        self.planeta = planeta
+        self.estrela = estrela
+        self.coord_x = coord_x
+        self.coord_y = coord_y
+        self.coord_z = coord_z
+
+    def to_dict(self):
+        return {
+            "planeta": self.planeta,
+            "estrela": self.estrela,
+            "coord_x": self.coord_x,
+            "coord_y": self.coord_y,
+            "coord_z": self.coord_z
+        }
