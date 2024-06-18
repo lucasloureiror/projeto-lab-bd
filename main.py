@@ -4,9 +4,10 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.responses import RedirectResponse
 from starlette.status import HTTP_303_SEE_OTHER
-from datetime import datetime
+import datetime
 import repository.connection, repository.lider_faccao, repository.cientista, repository.comandante
 import data
+import models
 from models import Usuario
 
 app = FastAPI()
@@ -130,7 +131,21 @@ async def acoes(acao: int, request: Request):
          "name": "Nome da federação", 
          "description": "Nome da federação", 
          "value": ""},
-         
+
+         {"id": "dia", 
+         "name": "Dia de fundação", 
+         "description": "Dia de fundação", 
+         "value": ""},
+
+         {"id": "mes", 
+         "name": "Mês (em número) de fundação", 
+         "description": "Mês (em número) de fundação, exemplo: 1, 2, 3....", 
+         "value": ""},
+
+         {"id": "ano", 
+         "name": "Ano de fundação", 
+         "description": "Ano de fundação", 
+         "value": ""},        
     ]
         acao = "criar uma nova federação com sua nação"
 
@@ -140,12 +155,67 @@ async def acoes(acao: int, request: Request):
          "name": "ID do planeta", 
          "description": "ID do planeta", 
          "value": ""},
+
+        {"id": "dia", 
+         "name": "Dia inicial", 
+         "description": "Dia inicial", 
+         "value": ""},
+
+         {"id": "mes", 
+         "name": "Mês (em número) inicial", 
+         "description": "Mês (em número) inicial, exemplo: 1, 2, 3....", 
+         "value": ""},
+
+         {"id": "ano", 
+         "name": "Ano de início", 
+         "description": "Ano de início", 
+         "value": ""},
          
     ]
         acao = "inserir uma nova dominância em um planeta"
 
 
     #FUNCIONALIDADES DE CIENTISTA
+    elif acao == 9:
+        form_fields = [
+        {"id": "id_estrela", 
+         "name": "ID da estrela", 
+         "description": "Id da Estrela", 
+         "value": ""},
+
+         {"id": "nome_estrela", 
+         "name": "Nome da estrela", 
+         "description": "Nome da estrela", 
+         "value": ""},
+
+         {"id": "classificacao_estrela",
+         "name": "Classificação da estrela",
+         "description": "Classificação da estrela",
+         "value": ""},
+
+         {"id": "massa_estrela", 
+         "name": "Massa da estrela", 
+         "description": "Massa da estrela", 
+         "value": ""},
+
+         {"id": "x_estrela", 
+         "name": "Posição X da estrela", 
+         "description": "Posição X da estrela", 
+         "value": ""},
+
+         {"id": "y_estrela", 
+         "name": "Posição Y da estrela", 
+         "description": "Posição Y da estrela", 
+         "value": ""},
+
+         {"id": "z_estrela", 
+         "name": "Posição Z da estrela", 
+         "description": "Posição Z da estrela", 
+         "value": ""},
+         
+    ]
+        acao = "cadastrar estrela"
+
     elif acao == 10:
         form_fields = [
         {"id": "id_estrela", 
@@ -155,6 +225,56 @@ async def acoes(acao: int, request: Request):
          
     ]
         acao = "buscar estrela por id"
+
+    elif acao == 11:
+        form_fields = [
+        {"id": "id_estrela", 
+         "name": "ID da estrela", 
+         "description": "Id da Estrela", 
+         "value": ""},
+
+         {"id": "nome_estrela", 
+         "name": "Nome da estrela", 
+         "description": "Nome da estrela", 
+         "value": ""},
+
+         {"id": "classificacao_estrela",
+         "name": "Classificação da estrela",
+         "description": "Classificação da estrela",
+         "value": ""},
+
+         {"id": "massa_estrela", 
+         "name": "Massa da estrela", 
+         "description": "Massa da estrela", 
+         "value": 0},
+
+         {"id": "x_estrela", 
+         "name": "Posição X da estrela", 
+         "description": "Posição X da estrela", 
+         "value": 0},
+
+         {"id": "y_estrela", 
+         "name": "Posição Y da estrela", 
+         "description": "Posição Y da estrela", 
+         "value": 0},
+
+         {"id": "z_estrela", 
+         "name": "Posição Z da estrela", 
+         "description": "Posição Z da estrela", 
+         "value": 0},
+         
+    ]
+        acao = "atualizar estrela"
+
+    elif acao == 12:
+        form_fields = [
+        {"id": "id_estrela", 
+         "name": "remover uma estrela por ID", 
+         "description": "Id da Estrela", 
+         "value": ""},
+         
+    ]
+        acao = "remover estrela por id"
 
 
     return templates.TemplateResponse("acoes.html", {"request": request, "acao": acao, "form_fields": form_fields, "usuario": usuario})
@@ -187,15 +307,42 @@ async def processar_acao(request: Request, acao: str):
         result = repository.comandante.excluir_propria_nacao(form_dict["nome_federacao"], usuario)
     
     elif acao == "criar uma nova federação com sua nação":
-        result = repository.comandante.criar_federacao(form_dict["nome_federacao"], datetime.now(), usuario)
+        result = repository.comandante.criar_federacao(form_dict["nome_federacao"], datetime.date(int(form_dict["ano"]), int(form_dict["mes"]), int(form_dict["dia"])), usuario)
     
     elif acao == "inserir uma nova dominância em um planeta":
-        result = repository.comandante.inserir_dominancia(form_dict["id_planeta"], datetime.now(), usuario)
+        result = repository.comandante.inserir_dominancia(form_dict["id_planeta"], datetime.date(int(form_dict["ano"]), int(form_dict["mes"]), int(form_dict["dia"])), usuario)
 
 
     #FUNCIONALIDADES DE CIENTISTA
+    elif acao == "cadastrar estrela":
+        Estrela = models.Estrela(
+            id = form_dict["id_estrela"],
+            nome = form_dict["nome_estrela"],
+            classificacao = form_dict["classificacao_estrela"],
+            massa = float(form_dict["massa_estrela"]),
+            x = float(form_dict["x_estrela"]),
+            y = float(form_dict["y_estrela"]),
+            z = float(form_dict["z_estrela"])
+        )
+        result = repository.cientista.criar_estrela(Estrela, usuario)
+
+    elif acao == "atualizar estrela":
+        Estrela = models.Estrela(
+            id = form_dict["id_estrela"],
+            nome = form_dict["nome_estrela"],
+            classificacao = form_dict["classificacao_estrela"],
+            massa = float(form_dict["massa_estrela"]),
+            x = float(form_dict["x_estrela"]),
+            y = float(form_dict["y_estrela"]),
+            z = float(form_dict["z_estrela"])
+        )
+        result = repository.cientista.atualizar_estrela(Estrela, usuario)
+        
     elif acao == "buscar estrela por id":
         result = repository.cientista.buscar_estrela(form_dict["id_estrela"], usuario)
+
+    elif acao == "remover estrela por id":
+        result = repository.cientista.remover_estrela(form_dict["id_estrela"], usuario)
     
 
     else: 
