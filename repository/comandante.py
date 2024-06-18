@@ -30,6 +30,8 @@ def incluir_propria_nacao(nome_federacao:str, usuario:Usuario):
                 mensagem = "Líder não encontrado."
             elif error.code == 20001:
                 mensagem = "Federação não encontrada."
+            elif error.code == 20004:
+                mensagem = "O nome da federação que será incluída não pode ser nulo."
             elif error.code == 20005 and ("ja faz parte dessa federacao" in error.message):
                 mensagem = "Sua nação já faz parte dessa federação."
             elif error.code == 20005:
