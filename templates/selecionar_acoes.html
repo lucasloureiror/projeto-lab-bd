@@ -28,7 +28,7 @@
                 {% for nome, id in acoes.items() %}
                 <div class="card">
                     <h3>{{ nome }}</h3>
-                    <p>Descrição da ação {{ nome }}</p>
+                    <p>Descrição: {{ nome }}</p>
                     <a href="{{ url_for('acoes', acao=id) }}" class="btn">Acessar Ação</a>
                 </div>
                 {% endfor %}
