@@ -73,6 +73,8 @@ def excluir_propria_nacao(nome_federacao:str, usuario:Usuario):
             error, = e.args
             if error.code == 20001:
                 mensagem = "Líder não encontrado."
+            elif error.code == 20004:
+                mensagem = "O nome da federação que será excluída não pode ser nulo."
             elif error.code == 20005 and ("nao faz parte de nenhuma federacao" in error.message):
                 mensagem = "Sua nação não faz parte de nenhuma federação."
             elif error.code == 20005:

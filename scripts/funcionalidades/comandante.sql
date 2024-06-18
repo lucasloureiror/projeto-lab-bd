@@ -63,7 +63,13 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_COMANDANTE AS
         v_propria_nacao NACAO%ROWTYPE;
         e_nacao_nao_tem_federacao EXCEPTION;
         e_nacao_nao_inclusa EXCEPTION;
-    BEGIN        
+        e_federacao_nula EXCEPTION;
+    BEGIN
+        -- Verificar se a federacao foi informada
+        IF p_nome_federacao IS NULL THEN
+            RAISE e_federacao_nula;
+        END IF;
+    
         -- Identificar a nacao do lider
         v_propria_nacao := BUSCAR_PROPRIA_NACAO(p_id_lider);
         
@@ -88,6 +94,8 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_COMANDANTE AS
         END IF;
         
         EXCEPTION
+            WHEN e_federacao_nula THEN
+                RAISE_APPLICATION_ERROR(-20004, 'O nome da federacao que sera excluida nao pode ser nulo.');
             WHEN e_nacao_nao_tem_federacao THEN
                 RAISE_APPLICATION_ERROR(-20005, 'Sua nacao nao faz parte de nenhuma federacao.');
             WHEN e_nacao_nao_inclusa THEN
