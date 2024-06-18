@@ -39,7 +39,7 @@ def incluir_propria_nacao(nome_federacao:str, usuario:Usuario):
             
             connection.rollback()
 
-            mensagem_log = f"Tentativa de incluir a nação do líder na federação '{nome_federacao}'"
+            mensagem_log = f"Tentativa de incluir a nação do líder na federação '{nome_federacao}' --> ERRO: '{mensagem}'"
             cursor.callproc(NOVO_LOG, [usuario.user_id, mensagem_log])
             connection.commit()
 
@@ -81,7 +81,7 @@ def excluir_propria_nacao(nome_federacao:str, usuario:Usuario):
                 mensagem = f"{error.code}: {error.message}"
             connection.rollback()
 
-            mensagem_log = f"Tentativa de excluir a nação do líder da federação '{nome_federacao}'"
+            mensagem_log = f"Tentativa de excluir a nação do líder da federação '{nome_federacao}' --> ERRO: '{mensagem}'"
             cursor.callproc(NOVO_LOG, [usuario.user_id, mensagem_log])
             connection.commit()
 
@@ -126,7 +126,7 @@ def criar_federacao(nome_federacao:str, data_fund:datetime, usuario:Usuario):
 
             connection.rollback()
 
-            mensagem_log = f"Tentativa de criar a federação '{nome_federacao}' com a nação do líder"
+            mensagem_log = f"Tentativa de criar a federação '{nome_federacao}' com a nação do líder --> ERRO: '{mensagem}'"
             cursor.callproc(NOVO_LOG, [usuario.user_id, mensagem_log])
             connection.commit()
 
@@ -171,7 +171,7 @@ def inserir_dominancia(id_planeta:str, data_ini:datetime, usuario:Usuario):
 
             connection.rollback()
 
-            mensagem_log = f"Tentativa de inserir dominância da nação do líder sobre o planeta '{id_planeta}'"
+            mensagem_log = f"Tentativa de inserir dominância da nação do líder sobre o planeta '{id_planeta}' --> ERRO: '{mensagem}'"
             cursor.callproc(NOVO_LOG, [usuario.user_id, mensagem_log])
             connection.commit()
 
