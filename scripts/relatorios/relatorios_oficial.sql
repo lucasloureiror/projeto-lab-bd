@@ -127,7 +127,7 @@ CREATE OR REPLACE PACKAGE BODY Relatorios_Oficial AS
     
     BEGIN 
         FOR rec IN c_habitantes LOOP
-            PIPE ROW (Habitantes_Record(NULL, NULL, NULL, NULL, rec.Especie, rec.QTD_Habitantes));
+            PIPE ROW (Habitantes_Record(NULL, NULL, NULL, rec.Sistema, NULL, rec.QTD_Habitantes));
         END LOOP;
     END Gerar_Relatorio_Habitantes_Sistemas;
     
