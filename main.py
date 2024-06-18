@@ -5,11 +5,11 @@ from fastapi.templating import Jinja2Templates
 from starlette.responses import RedirectResponse
 from starlette.status import HTTP_303_SEE_OTHER
 import datetime
-import repository.connection, repository.lider_faccao, repository.cientista, repository.comandante
-import repository.relatorios
 import data
 import models
 from models import Usuario
+import repository.connection
+import repository.funcionalidades.lider_faccao, repository.funcionalidades.cientista, repository.funcionalidades.comandante
 import repository.relatorios.lider_faccao
 
 app = FastAPI()
@@ -289,30 +289,30 @@ async def processar_acao(request: Request, acao: str):
 
     #FUNCIONALIDADES DE LÍDER
     if acao == "alterar nome da facção":
-         result = repository.lider_faccao.alterar_nome_faccao(form_dict["nome_faccao"], usuario)
+         result = repository.funcionalidades.lider_faccao.alterar_nome_faccao(form_dict["nome_faccao"], usuario)
     
     elif acao == "indicar novo líder":
-        result = repository.lider_faccao.indicar_novo_lider(form_dict["id_novo_lider"], usuario)
+        result = repository.funcionalidades.lider_faccao.indicar_novo_lider(form_dict["id_novo_lider"], usuario)
 
     elif acao == "credenciar nova comunidade":
-        result = repository.lider_faccao.credenciar_nova_comunidade(form_dict["nome_especie"], form_dict["nome_comunidade"], usuario)
+        result = repository.funcionalidades.lider_faccao.credenciar_nova_comunidade(form_dict["nome_especie"], form_dict["nome_comunidade"], usuario)
 
     elif acao == "remover facção de uma nação":
-        result = repository.lider_faccao.remover_faccao_de_nacao(form_dict["nome_faccao"], form_dict["nome_nacao"], usuario)
+        result = repository.funcionalidades.lider_faccao.remover_faccao_de_nacao(form_dict["nome_faccao"], form_dict["nome_nacao"], usuario)
 
 
     #FUNCIONALIDADES DE COMANDANTE
     elif acao == "incluir sua nação em federação existente":
-        result = repository.comandante.incluir_propria_nacao(form_dict["nome_federacao"], usuario)
+        result = repository.funcionalidades.comandante.incluir_propria_nacao(form_dict["nome_federacao"], usuario)
     
     elif acao == "excluir sua nação de uma federação":
-        result = repository.comandante.excluir_propria_nacao(form_dict["nome_federacao"], usuario)
+        result = repository.funcionalidades.comandante.excluir_propria_nacao(form_dict["nome_federacao"], usuario)
     
     elif acao == "criar uma nova federação com sua nação":
-        result = repository.comandante.criar_federacao(form_dict["nome_federacao"], datetime.date(int(form_dict["ano"]), int(form_dict["mes"]), int(form_dict["dia"])), usuario)
+        result = repository.funcionalidades.comandante.criar_federacao(form_dict["nome_federacao"], datetime.date(int(form_dict["ano"]), int(form_dict["mes"]), int(form_dict["dia"])), usuario)
     
     elif acao == "inserir uma nova dominância em um planeta":
-        result = repository.comandante.inserir_dominancia(form_dict["id_planeta"], datetime.date(int(form_dict["ano"]), int(form_dict["mes"]), int(form_dict["dia"])), usuario)
+        result = repository.funcionalidades.comandante.inserir_dominancia(form_dict["id_planeta"], datetime.date(int(form_dict["ano"]), int(form_dict["mes"]), int(form_dict["dia"])), usuario)
 
 
     #FUNCIONALIDADES DE CIENTISTA
@@ -326,7 +326,7 @@ async def processar_acao(request: Request, acao: str):
             y = float(form_dict["y_estrela"]),
             z = float(form_dict["z_estrela"])
         )
-        result = repository.cientista.criar_estrela(Estrela, usuario)
+        result = repository.funcionalidades.cientista.criar_estrela(Estrela, usuario)
 
     elif acao == "atualizar estrela":
         Estrela = models.Estrela(
@@ -338,13 +338,13 @@ async def processar_acao(request: Request, acao: str):
             y = float(form_dict["y_estrela"]),
             z = float(form_dict["z_estrela"])
         )
-        result = repository.cientista.atualizar_estrela(Estrela, usuario)
+        result = repository.funcionalidades.cientista.atualizar_estrela(Estrela, usuario)
         
     elif acao == "buscar estrela por id":
-        result = repository.cientista.buscar_estrela(form_dict["id_estrela"], usuario)
+        result = repository.funcionalidades.cientista.buscar_estrela(form_dict["id_estrela"], usuario)
 
     elif acao == "remover estrela por id":
-        result = repository.cientista.remover_estrela(form_dict["id_estrela"], usuario)
+        result = repository.funcionalidades.cientista.remover_estrela(form_dict["id_estrela"], usuario)
     
 
     else: 
