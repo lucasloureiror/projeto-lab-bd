@@ -43,8 +43,12 @@ CREATE OR REPLACE PACKAGE BODY Relatorios_Oficial AS
     
     FUNCTION Gerar_Relatorio_Habitantes_Geral(lider_logado IN lider.CPI%TYPE)
     RETURN SYS_REFCURSOR IS
+        v_nacao_lider Nacao.Nome%TYPE;
         cur SYS_REFCURSOR;
     BEGIN
+        SELECT L.Nacao INTO v_nacao_lider FROM
+        Lider L WHERE L.CPI = lider_logado;
+    
         OPEN cur FOR
             SELECT 
                 C.NOME AS Nome,
@@ -53,9 +57,8 @@ CREATE OR REPLACE PACKAGE BODY Relatorios_Oficial AS
                 S.Nome AS Sistema,
                 PA.Especie AS Especie,
                 C.QTD_Habitantes AS QTD_Habitantes
-            FROM Lider L 
-            JOIN Nacao N ON N.Nome = L.Nacao
-            JOIN Nacao_Faccao NF ON NF.nacao = N.Nome 
+            FROM Nacao N 
+            JOIN Nacao_Faccao NF ON NF.nacao = N.Nome AND N.Nome = v_nacao_lider
             JOIN Faccao F ON F.Nome = NF.Faccao
             JOIN Dominancia D ON D.Nacao = N.Nome AND D.DATA_INI <= TRUNC(SYSDATE) AND
                             (D.DATA_FIM >= TRUNC(SYSDATE) OR D.DATA_FIM IS NULL)
@@ -75,15 +78,18 @@ CREATE OR REPLACE PACKAGE BODY Relatorios_Oficial AS
     
     FUNCTION Gerar_Relatorio_Habitantes_Faccao(lider_logado IN lider.CPI%TYPE)
     RETURN SYS_REFCURSOR IS
+        v_nacao_lider Nacao.Nome%TYPE;
         cur SYS_REFCURSOR;
     BEGIN
+        SELECT L.Nacao INTO v_nacao_lider FROM
+        Lider L WHERE L.CPI = lider_logado;
+    
         OPEN cur FOR
             SELECT 
                 F.Nome AS Faccao,
                 SUM(C.QTD_Habitantes) AS QTD_Habitantes
-            FROM Lider L 
-            JOIN Nacao N ON N.Nome = L.Nacao
-            JOIN Nacao_Faccao NF ON NF.Nacao = N.Nome 
+            FROM Nacao N 
+            JOIN Nacao_Faccao NF ON NF.nacao = N.Nome AND N.Nome = v_nacao_lider
             JOIN Faccao F ON F.Nome = NF.Faccao
             JOIN Dominancia D ON D.Nacao = N.Nome AND D.DATA_INI <= TRUNC(SYSDATE) AND
                             (D.DATA_FIM >= TRUNC(SYSDATE) OR D.DATA_FIM IS NULL)
@@ -103,15 +109,18 @@ CREATE OR REPLACE PACKAGE BODY Relatorios_Oficial AS
     
     FUNCTION Gerar_Relatorio_Habitantes_Sistemas(lider_logado IN lider.CPI%TYPE)
     RETURN SYS_REFCURSOR IS
+        v_nacao_lider Nacao.Nome%TYPE;
         cur SYS_REFCURSOR;
     BEGIN
+        SELECT L.Nacao INTO v_nacao_lider FROM
+        Lider L WHERE L.CPI = lider_logado;
+    
         OPEN cur FOR
             SELECT 
                 S.Nome AS Sistema,
                 SUM(C.QTD_Habitantes) AS QTD_Habitantes
-            FROM Lider L 
-            JOIN Nacao N ON N.Nome = L.Nacao
-            JOIN Nacao_Faccao NF ON NF.Nacao = N.Nome 
+            FROM Nacao N 
+            JOIN Nacao_Faccao NF ON NF.nacao = N.Nome AND N.Nome = v_nacao_lider
             JOIN Faccao F ON F.Nome = NF.Faccao
             JOIN Dominancia D ON D.Nacao = N.Nome AND D.DATA_INI <= TRUNC(SYSDATE) AND
                             (D.DATA_FIM >= TRUNC(SYSDATE) OR D.DATA_FIM IS NULL)
@@ -132,15 +141,18 @@ CREATE OR REPLACE PACKAGE BODY Relatorios_Oficial AS
     
     FUNCTION Gerar_Relatorio_Habitantes_Planetas(lider_logado IN lider.CPI%TYPE)
     RETURN SYS_REFCURSOR IS
+        v_nacao_lider Nacao.Nome%TYPE;
         cur SYS_REFCURSOR;
     BEGIN
+        SELECT L.Nacao INTO v_nacao_lider FROM
+        Lider L WHERE L.CPI = lider_logado;
+    
         OPEN cur FOR
             SELECT 
                 P.Id_Astro AS Planeta,
                 SUM(C.QTD_Habitantes) AS QTD_Habitantes
-            FROM Lider L 
-            JOIN Nacao N ON N.Nome = L.Nacao
-            JOIN Nacao_Faccao NF ON NF.Nacao = N.Nome 
+            FROM Nacao N 
+            JOIN Nacao_Faccao NF ON NF.nacao = N.Nome AND N.Nome = v_nacao_lider
             JOIN Faccao F ON F.Nome = NF.Faccao
             JOIN Dominancia D ON D.Nacao = N.Nome AND D.DATA_INI <= TRUNC(SYSDATE) AND
                             (D.DATA_FIM >= TRUNC(SYSDATE) OR D.DATA_FIM IS NULL)
@@ -162,15 +174,18 @@ CREATE OR REPLACE PACKAGE BODY Relatorios_Oficial AS
     
     FUNCTION Gerar_Relatorio_Habitantes_Especies(lider_logado IN lider.CPI%TYPE)
     RETURN SYS_REFCURSOR IS
+        v_nacao_lider Nacao.Nome%TYPE;
         cur SYS_REFCURSOR;
     BEGIN
+        SELECT L.Nacao INTO v_nacao_lider FROM
+        Lider L WHERE L.CPI = lider_logado;
+    
         OPEN cur FOR
             SELECT 
                 PA.Especie AS Especie,
                 SUM(C.QTD_Habitantes) AS QTD_Habitantes
-            FROM Lider L 
-            JOIN Nacao N ON N.Nome = L.Nacao
-            JOIN Nacao_Faccao NF ON NF.Nacao = N.Nome 
+            FROM Nacao N 
+            JOIN Nacao_Faccao NF ON NF.nacao = N.Nome AND N.Nome = v_nacao_lider
             JOIN Faccao F ON F.Nome = NF.Faccao
             JOIN Dominancia D ON D.Nacao = N.Nome AND D.DATA_INI <= TRUNC(SYSDATE) AND
                             (D.DATA_FIM >= TRUNC(SYSDATE) OR D.DATA_FIM IS NULL)
