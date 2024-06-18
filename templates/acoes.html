@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulário Dinâmico</title>
+    <link href="{{ url_for('static', path='/acoes.css') }}" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Dashboard</h1>
+            <div class="user-info">
+                <span>Bem-vindo, <strong>{{ usuario.nome }}</strong></span>
+            </div>
+        </div>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="/overview">Overview</a></li>
+            <li><a href="/selecionar_relatorio">Relatórios</a></li>
+        </ul>
+    </nav>
+    <main>
+        <section class="relatorios">
+            <h2>Formulário para {{ acao }}</h2>
+            <form action="/acoes/{{ acao }}" method="post">
+                {% for field in form_fields %}
+                <div class="form-group">
+                    <label for="{{ field.id }}">{{ field.name }}</label>
+                    <input type="text" id="{{ field.id }}" name="{{ field.id }}" placeholder="{{ field.description }}" value="{{ field.value }}">
+                </div>
+                {% endfor %}
+                <button type="submit" class="btn">Enviar</button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

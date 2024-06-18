@@ -15,3 +15,6 @@ class Estrela:
         self.x = x
         self.y = y
         self.z = z
+
+    def __str__(self):
+        return f"Estrela: [{self.id}, {self.nome}, {self.classificacao}, {self.massa}, {self.x}, {self.y}, {self.z}]"

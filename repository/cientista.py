@@ -33,6 +33,7 @@ def buscar_estrela(id_estrela:str, usuario:Usuario):
 
             connection.commit()
             print(mensagem_log)
+            return estrela
 
         except oracledb.DatabaseError as e:
             error, = e.args
