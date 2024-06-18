@@ -28,7 +28,7 @@ def alterar_nome_faccao(novo_nome_faccao:str, usuario:Usuario):
             if error.code == 20001:
                 mensagem_erro = "ERRO: Líder de facção não encontrado."
             elif error.code == 20004:
-                mensagem_erro = "ERRO: O novo nome da facção não pode ser nulo."
+                mensagem_erro = "ERRO: O atributo 'NOME' não pode ser nulo. Escolha um novo nome para a facção e tente novamente."
             elif error.code == 20005:
                 mensagem_erro = "ERRO: O novo nome da facção deve ser diferente do nome atual."
             elif error.code == 12899 and ("maximum: 15" in error.message):
@@ -43,7 +43,7 @@ def alterar_nome_faccao(novo_nome_faccao:str, usuario:Usuario):
             cursor.callproc(NOVO_LOG, [usuario.user_id, mensagem_log])
             connection.commit()
 
-            print(mensagem_log)
+            print(error.message)
             return mensagem_erro
         
         finally:
@@ -72,22 +72,23 @@ def indicar_novo_lider(id_novo_lider:str, usuario:Usuario):
         except oracledb.DatabaseError as e:
             error, = e.args
             if error.code == 20001:
-                mensagem = "Líder de facção não encontrado."
+                mensagem_erro = "ERRO: Líder de facção não encontrado."
             elif error.code == 20004:
-                mensagem = "O atributo 'LIDER'' não pode ser nulo. Indique o CPI do novo líder e tente novamente."
+                mensagem_erro = "ERRO: O atributo 'LIDER' não pode ser nulo. Indique o CPI do novo líder e tente novamente."
             elif error.code == 20005:
-                mensagem = "Sua facção não está presente na nação do líder '" +  id_novo_lider + "'. Escolha outro líder e tente novamente."
+                mensagem_erro = "ERRO: Sua facção não está presente na nação do líder '" +  id_novo_lider + "'. Escolha outro líder e tente novamente."
             else:
-                mensagem = f"{error.code}: {error.message}"
+                mensagem_erro = f"{error.message}"
 
             connection.rollback()
 
-            mensagem_log = f"Tentativa de indicar '{id_novo_lider}' como o novo líder da facção --> ERRO {error.code}"
+            mensagem_log = f"Tentativa de indicar '{id_novo_lider}' como o novo líder da facção --> {mensagem_erro}"
+            mensagem_log = utils.ajustar_mensagem_log(mensagem_log)
             cursor.callproc(NOVO_LOG, [usuario.user_id, mensagem_log])
             connection.commit()
 
             print(mensagem_log)
-            return mensagem
+            return mensagem_erro
         
         finally:
             cursor.close()
@@ -115,24 +116,25 @@ def credenciar_nova_comunidade(nome_especie:str, nome_comunidade:str, usuario:Us
         except oracledb.DatabaseError as e:
             error, = e.args
             if error.code == 20001:
-                mensagem = f"{error.code}: {error.message}"
+                mensagem_erro = f"{error.code}: {error.message}"
             elif error.code == 20003:
-                mensagem = "Comunidade já credenciada na sua facção, altere a comunidade e tente novamente."
+                mensagem_erro = "Comunidade já credenciada na sua facção, altere a comunidade e tente novamente."
             elif error.code == 20004:
-                mensagem = "Os atributos 'ESPECIE' e 'COMUNIDADE' não podem ser nulos."
+                mensagem_erro = "Os atributos 'ESPECIE' e 'COMUNIDADE' não podem ser nulos."
             elif error.code == 20005:
-                mensagem = "Somente comunidades que habitam um planeta dominado por uma nação associada à sua facção podem ser credenciadas."
+                mensagem_erro = "Somente comunidades que habitam um planeta dominado por uma nação associada à sua facção podem ser credenciadas."
             else:
-                mensagem = f"{error.code}: {error.message}"
+                mensagem_erro = f"{error.message}"
 
             connection.rollback()
 
-            mensagem_log = f"Tentativa de credenciar comunidade '[{nome_especie}, {nome_comunidade}]' na facção do líder --> ERRO {error.code}"
+            mensagem_log = f"Tentativa de credenciar comunidade '[{nome_especie}, {nome_comunidade}]' na facção do líder --> {mensagem_erro}"
+            mensagem_log = utils.ajustar_mensagem_log(mensagem_log)
             cursor.callproc(NOVO_LOG, [usuario.user_id, mensagem_log])
             connection.commit()
 
-            print(mensagem_log)
-            return mensagem
+            print(error.message)
+            return mensagem_erro
         
         finally:
             cursor.close()
@@ -159,20 +161,21 @@ def remover_faccao_de_nacao(nome_faccao:str, nome_nacao:str, usuario:Usuario):
         except oracledb.DatabaseError as e:
             error, = e.args
             if error.code == 20001:
-                mensagem = f"{error.code}: {error.message}"
+                mensagem_erro = f"{error.code}: {error.message}"
             elif error.code == 20005:
-                mensagem = "O líder da facção '" + nome_faccao + "' pertence a nação '" + nome_nacao + "' e, portanto, tal facção nao pode ser removida dessa nação."
+                mensagem_erro = "O líder da facção '" + nome_faccao + "' pertence a nação '" + nome_nacao + "' e, portanto, tal facção nao pode ser removida dessa nação."
             else:
-                mensagem = f"{error.code}: {error.message}"
+                mensagem_erro = f"{error.message}"
 
             connection.rollback()
 
-            mensagem_log = f"Tentativa de remover a facção '{nome_faccao}' da nação '{nome_nacao}' --> ERRO {error.code}"
+            mensagem_log = f"Tentativa de remover a facção '{nome_faccao}' da nação '{nome_nacao}' --> {mensagem_erro}"
+            mensagem_log = utils.ajustar_mensagem_log(mensagem_log)
             cursor.callproc(NOVO_LOG, [usuario.user_id, mensagem_log])
             connection.commit()
 
-            print(mensagem_log)
-            return mensagem
+            print(error.message)
+            return mensagem_erro
         
         finally:
             cursor.close()
