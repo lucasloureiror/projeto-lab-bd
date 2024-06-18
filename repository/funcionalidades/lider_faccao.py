@@ -68,6 +68,7 @@ def indicar_novo_lider(id_novo_lider:str, usuario:Usuario):
 
             connection.commit()
             print(mensagem_log)
+            return True;
 
         except oracledb.DatabaseError as e:
             error, = e.args

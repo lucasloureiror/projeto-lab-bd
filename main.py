@@ -293,6 +293,9 @@ async def processar_acao(request: Request, acao: str):
     
     elif acao == "indicar novo líder":
         result = repository.funcionalidades.lider_faccao.indicar_novo_lider(form_dict["id_novo_lider"], usuario)
+        if result == True: # Remover permissões do antigo líder
+            usuario.eh_lider_faccao = False
+            result = None
 
     elif acao == "credenciar nova comunidade":
         result = repository.funcionalidades.lider_faccao.credenciar_nova_comunidade(form_dict["nome_especie"], form_dict["nome_comunidade"], usuario)
