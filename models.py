@@ -6,3 +6,12 @@ class Usuario:
         self.cargo = cargo
         self.eh_lider_faccao = eh_lider_faccao
         
+class Estrela:
+    def __init__(self, id:str, nome:str, classificacao:str, massa:float, x:float, y:float, z:float):
+        self.id = id
+        self.nome = nome
+        self.classificacao = classificacao
+        self.massa = massa
+        self.x = x
+        self.y = y
+        self.z = z
