@@ -39,7 +39,7 @@ def get_relatorio_lider(usuario: Usuario):
             )
             relatorios.append(relatorio)
 
-        return relatorios
+        return relatorios, "Relatório para Líder"
 
 
     except oracledb.DatabaseError as e:

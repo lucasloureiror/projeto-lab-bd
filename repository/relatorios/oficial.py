@@ -49,7 +49,7 @@ def get_relatorio_habitantes_geral(usuario: Usuario):
                 f"QTD_Habitantes: {relat.qtd_habitantes}"
             )
 
-        return relatorios
+        return relatorios, "Relatório Habitantes Geral"
 
     except oracledb.DatabaseError as e:
         error, = e.args
@@ -89,7 +89,7 @@ def get_relatorio_habitantes_faccao(usuario: Usuario):
                 f"QTD_Habitantes: {relat.qtd_habitantes}"
             )
 
-        return relatorios
+        return relatorios, "Relatório Habitantes por Faccão"
 
     except oracledb.DatabaseError as e:
         error, = e.args
@@ -129,7 +129,7 @@ def get_relatorio_habitantes_sistemas(usuario: Usuario):
                 f"QTD_Habitantes: {relat.qtd_habitantes}"
             )
 
-        return relatorios
+        return relatorios, "Relatório Habitantes por Sistemas"
 
     except oracledb.DatabaseError as e:
         error, = e.args
@@ -169,7 +169,7 @@ def get_relatorio_habitantes_planetas(usuario: Usuario):
                 f"QTD_Habitantes: {relat.qtd_habitantes}"
             )
 
-        return relatorios
+        return relatorios, "Relatório Habitantes por Planeta"
 
     except oracledb.DatabaseError as e:
         error, = e.args
@@ -209,7 +209,7 @@ def get_relatorio_habitantes_especies(usuario: Usuario):
                 f"QTD_Habitantes: {relat.qtd_habitantes}"
             )
 
-        return relatorios
+        return relatorios, "Relatório Habitantes por Espécie"
 
     except oracledb.DatabaseError as e:
         error, = e.args

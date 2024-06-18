@@ -365,33 +365,34 @@ async def relatorios(relatorio: int, request: Request):
 
     show_next = False
     show_previous = False
+    titulo_relatorio = ""
 
     #RELATÓRIOS LÍDER DA FACÇÃO
     if relatorio == 1:
-        relatorios = repository.relatorios.lider_faccao.get_relatorio_lider(usuario)
+        relatorios, titulo_relatorio = repository.relatorios.lider_faccao.get_relatorio_lider(usuario)
 
     #RELATÓRIOS DO OFICIAL
     elif relatorio == 2: #Geral
-        relatorios = repository.relatorios.oficial.get_relatorio_habitantes_geral(usuario)
+        relatorios, titulo_relatorio  = repository.relatorios.oficial.get_relatorio_habitantes_geral(usuario)
         show_next = True
 
     elif relatorio == 3: #Facção
-        relatorios = repository.relatorios.oficial.get_relatorio_habitantes_faccao(usuario)
+        relatorios, titulo_relatorio  = repository.relatorios.oficial.get_relatorio_habitantes_faccao(usuario)
         show_previous = True
         show_next = True
 
     elif relatorio == 4: #Sistema
-        relatorios = repository.relatorios.oficial.get_relatorio_habitantes_sistemas(usuario)
+        relatorios, titulo_relatorio  = repository.relatorios.oficial.get_relatorio_habitantes_sistemas(usuario)
         show_previous = True
         show_next = True
 
     elif relatorio == 5: #Planeta
-        relatorios = repository.relatorios.oficial.get_relatorio_habitantes_planetas(usuario)
+        relatorios, titulo_relatorio  = repository.relatorios.oficial.get_relatorio_habitantes_planetas(usuario)
         show_previous = True
         show_next = True
     
     elif relatorio == 6: #Espécie 
-        relatorios = repository.relatorios.oficial.get_relatorio_habitantes_especies(usuario)
+        relatorios, titulo_relatorio  = repository.relatorios.oficial.get_relatorio_habitantes_especies(usuario)
         show_previous = True
 
 
@@ -403,5 +404,6 @@ async def relatorios(relatorio: int, request: Request):
         "relatorio": relatorio,
         "show_next": show_next,
         "show_previous": show_previous,
+        "titulo_relatorio": titulo_relatorio
         })
 
