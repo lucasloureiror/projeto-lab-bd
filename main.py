@@ -4,10 +4,10 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.responses import RedirectResponse
 from starlette.status import HTTP_303_SEE_OTHER
-import repository.connection
+from datetime import datetime
+import repository.connection, repository.lider_faccao, repository.cientista, repository.comandante
 import data
 from models import Usuario
-import repository.lider_faccao, repository.cientista
 
 app = FastAPI()
 
@@ -51,7 +51,7 @@ async def selecionar_action(request: Request, cargo: str):
 @app.get("/acoes/{acao}")
 async def acoes(acao: int, request: Request):
 
-
+    #FUNCIONALIDADES DE LÍDER DA FACCAO
     if acao == 1:
         form_fields = [
         {"id": "nome_faccao", 
@@ -102,6 +102,50 @@ async def acoes(acao: int, request: Request):
     ]
         acao = "remover facção de uma nação"
 
+
+    #FUNCIONALIDADES DE COMANDANTE
+    elif acao == 5:
+        form_fields = [
+        {"id": "nome_federacao", 
+         "name": "Nome da federação", 
+         "description": "Nome da federação", 
+         "value": ""},
+         
+    ]
+        acao = "incluir sua nação em federação existente"
+
+    elif acao == 6:
+        form_fields = [
+        {"id": "nome_federacao", 
+         "name": "Nome da federação", 
+         "description": "Nome da federação", 
+         "value": ""},
+         
+    ]
+        acao = "excluir sua nação de uma federação"
+    
+    elif acao == 7:
+        form_fields = [
+        {"id": "nome_federacao", 
+         "name": "Nome da federação", 
+         "description": "Nome da federação", 
+         "value": ""},
+         
+    ]
+        acao = "criar uma nova federação com sua nação"
+
+    elif acao == 8:
+        form_fields = [
+        {"id": "id_planeta", 
+         "name": "ID do planeta", 
+         "description": "ID do planeta", 
+         "value": ""},
+         
+    ]
+        acao = "inserir uma nova dominância em um planeta"
+
+
+    #FUNCIONALIDADES DE CIENTISTA
     elif acao == 10:
         form_fields = [
         {"id": "id_estrela", 
@@ -111,6 +155,8 @@ async def acoes(acao: int, request: Request):
          
     ]
         acao = "buscar estrela por id"
+
+
     return templates.TemplateResponse("acoes.html", {"request": request, "acao": acao, "form_fields": form_fields, "usuario": usuario})
 
 @app.post("/acoes/{acao}")
@@ -129,10 +175,22 @@ async def processar_acao(request: Request, acao: str):
     elif acao == "credenciar nova comunidade":
         result = repository.lider_faccao.credenciar_nova_comunidade(form_dict["nome_especie"], form_dict["nome_comunidade"], usuario)
 
-
     elif acao == "remover facção de uma nação":
         result = repository.lider_faccao.remover_faccao_de_nacao(form_dict["nome_faccao"], form_dict["nome_nacao"], usuario)
 
+
+    #FUNCIONALIDADES DE COMANDANTE
+    elif acao == "incluir sua nação em federação existente":
+        result = repository.comandante.incluir_propria_nacao(form_dict["nome_federacao"], usuario)
+    
+    elif acao == "excluir sua nação de uma federação":
+        result = repository.comandante.excluir_propria_nacao(form_dict["nome_federacao"], usuario)
+    
+    elif acao == "criar uma nova federação com sua nação":
+        result = repository.comandante.criar_federacao(form_dict["nome_federacao"], datetime.now(), usuario)
+    
+    elif acao == "inserir uma nova dominância em um planeta":
+        result = repository.comandante.inserir_dominancia(form_dict["id_planeta"], datetime.now(), usuario)
 
 
     #FUNCIONALIDADES DE CIENTISTA
