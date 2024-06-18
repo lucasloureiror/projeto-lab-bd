@@ -1,11 +1,12 @@
 import oracledb
 from models import Usuario
+import oracle_config as credentials
 
 # Função para conectar ao banco de dados Oracle
 def get_connection():
     try:
-        dsn = oracledb.makedsn('localhost', '1521', service_name='FREEPDB1')
-        connection = oracledb.connect(user='LAB_BD', password='lab_bd', dsn=dsn)
+        dsn = oracledb.makedsn(credentials.ORACLE["HOST"], '1521', service_name=credentials.ORACLE["SERVICE_NAME"])
+        connection = oracledb.connect(user=credentials.ORACLE["USER"], password=credentials.ORACLE["PASSWORD"], dsn=dsn)
         print("Conexão realizada com sucesso")
         return connection
     except oracledb.DatabaseError as e:
@@ -37,6 +38,7 @@ async def check_credentials(username: str, password: str):
 
             # Buscar o nome do usuário
             nome = cursor.callfunc("FUNC_BUSCA_NOME_USUARIO", str, [username])
+            print(nome)
 
             connection.commit()
             
