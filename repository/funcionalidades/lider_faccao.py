@@ -1,5 +1,6 @@
 # Funcionalidades de gerenciamento para usuários do tipo "Líder de Facção"
 import oracledb
+import utils
 from models import Usuario
 from repository.connection import get_connection
 
@@ -25,20 +26,25 @@ def alterar_nome_faccao(novo_nome_faccao:str, usuario:Usuario):
         except oracledb.DatabaseError as e:
             error, = e.args
             if error.code == 20001:
-                mensagem = "Líder de facção não encontrado."
+                mensagem_erro = "ERRO: Líder de facção não encontrado."
+            elif error.code == 20004:
+                mensagem_erro = "ERRO: O novo nome da facção não pode ser nulo."
             elif error.code == 20005:
-                mensagem = "O novo nome da facção deve ser diferente do nome atual."
+                mensagem_erro = "ERRO: O novo nome da facção deve ser diferente do nome atual."
+            elif error.code == 12899 and ("maximum: 15" in error.message):
+                mensagem_erro = "ERRO: O nome de facção informado é muito grande. Informe um nome com até 15 caracteres e tente novamente."
             else:
-                mensagem = f"{error.code}: {error.message}"
+                mensagem_erro = f"{error.message}"
 
             connection.rollback()
 
-            mensagem_log = f"Tentativa de alterar o nome da facção do líder para '{novo_nome_faccao}' --> ERRO {error.code}"
+            mensagem_log = f"Tentativa de alterar o nome da facção do líder para '{novo_nome_faccao}' --> {mensagem_erro}"
+            mensagem_log = utils.ajustar_mensagem_log(mensagem_log)
             cursor.callproc(NOVO_LOG, [usuario.user_id, mensagem_log])
             connection.commit()
 
             print(mensagem_log)
-            return mensagem
+            return mensagem_erro
         
         finally:
             cursor.close()
