@@ -4,7 +4,8 @@
 
 CREATE OR REPLACE PACKAGE PAC_FUNC_CIENTISTA AS
 
-    PROCEDURE criar_estrela(p_estrela ESTRELA%ROWTYPE);
+    PROCEDURE criar_estrela(p_id ESTRELA.ID_ESTRELA%TYPE, p_nome ESTRELA.NOME%TYPE, p_classificacao ESTRELA.CLASSIFICACAO%TYPE,
+                            p_massa ESTRELA.MASSA%TYPE, p_x ESTRELA.X%TYPE, p_y ESTRELA.Y%TYPE, p_z ESTRELA.Z%TYPE);
     FUNCTION buscar_estrela(p_id_estrela ESTRELA.ID_ESTRELA%TYPE) RETURN ESTRELA%ROWTYPE;
     PROCEDURE atualizar_estrela(p_estrela ESTRELA%ROWTYPE);
     PROCEDURE remover_estrela(p_id_estrela ESTRELA.ID_ESTRELA%TYPE);
@@ -17,25 +18,25 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_CIENTISTA AS
     FUNCTION coordenadas_ja_existem(p_x ESTRELA.X%TYPE, p_y ESTRELA.Y%TYPE, p_z ESTRELA.Z%TYPE) RETURN BOOLEAN;
 
     /* Procedimento publico: Criar uma nova estrela */
-    PROCEDURE criar_estrela(p_estrela IN ESTRELA%ROWTYPE) AS
+    PROCEDURE criar_estrela(
+        p_id ESTRELA.ID_ESTRELA%TYPE,
+        p_nome ESTRELA.NOME%TYPE,
+        p_classificacao ESTRELA.CLASSIFICACAO%TYPE,
+        p_massa ESTRELA.MASSA%TYPE,
+        p_x ESTRELA.X%TYPE,
+        p_y ESTRELA.Y%TYPE,
+        p_z ESTRELA.Z%TYPE
+    ) AS
         e_coordenadas_ja_existem EXCEPTION;
         e_inserir_null EXCEPTION;
         PRAGMA EXCEPTION_INIT(e_inserir_null, -1400);
     BEGIN
-        IF COORDENADAS_JA_EXISTEM(p_estrela.X, p_estrela.Y, p_estrela.Z) THEN
+        IF COORDENADAS_JA_EXISTEM(p_x, p_y, p_z) THEN
             RAISE e_coordenadas_ja_existem;
         END IF;
     
         INSERT INTO ESTRELA(ID_ESTRELA, NOME, CLASSIFICACAO, MASSA, X, Y, Z)
-        VALUES(
-            p_estrela.ID_ESTRELA,
-            p_estrela.NOME,
-            p_estrela.CLASSIFICACAO,
-            p_estrela.MASSA,
-            p_estrela.X,
-            p_estrela.Y,
-            p_estrela.Z
-        );
+        VALUES(p_id, p_nome, p_classificacao, p_massa, p_x, p_y, p_z);
         
         EXCEPTION
             WHEN DUP_VAL_ON_INDEX THEN RAISE_APPLICATION_ERROR(-20003, 'Estrela ja existe, altere o ID e tente novamente.');
