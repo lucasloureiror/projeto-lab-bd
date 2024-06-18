@@ -1,6 +1,6 @@
 import oracledb
 import datetime
-from models import Usuario, Federacao
+from models import Usuario
 from repository.connection import get_connection
 
 NOVO_LOG = "PROC_INSERIR_LOG"
