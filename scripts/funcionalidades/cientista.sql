@@ -4,10 +4,25 @@
 
 CREATE OR REPLACE PACKAGE PAC_FUNC_CIENTISTA AS
 
-    PROCEDURE criar_estrela(p_id ESTRELA.ID_ESTRELA%TYPE, p_nome ESTRELA.NOME%TYPE, p_classificacao ESTRELA.CLASSIFICACAO%TYPE,
-                            p_massa ESTRELA.MASSA%TYPE, p_x ESTRELA.X%TYPE, p_y ESTRELA.Y%TYPE, p_z ESTRELA.Z%TYPE);
+    PROCEDURE criar_estrela(
+        p_id_estrela ESTRELA.ID_ESTRELA%TYPE,
+        p_nome ESTRELA.NOME%TYPE,
+        p_classificacao ESTRELA.CLASSIFICACAO%TYPE,
+        p_massa ESTRELA.MASSA%TYPE,
+        p_x ESTRELA.X%TYPE,
+        p_y ESTRELA.Y%TYPE,
+        p_z ESTRELA.Z%TYPE
+    );
     FUNCTION buscar_estrela(p_id_estrela ESTRELA.ID_ESTRELA%TYPE) RETURN ESTRELA%ROWTYPE;
-    PROCEDURE atualizar_estrela(p_estrela ESTRELA%ROWTYPE);
+    PROCEDURE atualizar_estrela(
+        p_id_estrela ESTRELA.ID_ESTRELA%TYPE,
+        p_nome ESTRELA.NOME%TYPE,
+        p_classificacao ESTRELA.CLASSIFICACAO%TYPE,
+        p_massa ESTRELA.MASSA%TYPE,
+        p_x ESTRELA.X%TYPE,
+        p_y ESTRELA.Y%TYPE,
+        p_z ESTRELA.Z%TYPE
+    );
     PROCEDURE remover_estrela(p_id_estrela ESTRELA.ID_ESTRELA%TYPE);
 
 END PAC_FUNC_CIENTISTA;
@@ -19,7 +34,7 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_CIENTISTA AS
 
     /* Procedimento publico: Criar uma nova estrela */
     PROCEDURE criar_estrela(
-        p_id ESTRELA.ID_ESTRELA%TYPE,
+        p_id_estrela ESTRELA.ID_ESTRELA%TYPE,
         p_nome ESTRELA.NOME%TYPE,
         p_classificacao ESTRELA.CLASSIFICACAO%TYPE,
         p_massa ESTRELA.MASSA%TYPE,
@@ -36,7 +51,7 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_CIENTISTA AS
         END IF;
     
         INSERT INTO ESTRELA(ID_ESTRELA, NOME, CLASSIFICACAO, MASSA, X, Y, Z)
-        VALUES(p_id, p_nome, p_classificacao, p_massa, p_x, p_y, p_z);
+        VALUES(p_id_estrela, p_nome, p_classificacao, p_massa, p_x, p_y, p_z);
         
         EXCEPTION
             WHEN DUP_VAL_ON_INDEX THEN RAISE_APPLICATION_ERROR(-20003, 'Estrela ja existe, altere o ID e tente novamente.');
@@ -59,19 +74,27 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_CIENTISTA AS
     END buscar_estrela;
     
     /* Procedimento publico: atualizar uma estrela existente */
-    PROCEDURE atualizar_estrela(p_estrela IN ESTRELA%ROWTYPE) AS
+    PROCEDURE atualizar_estrela(
+        p_id_estrela ESTRELA.ID_ESTRELA%TYPE,
+        p_nome ESTRELA.NOME%TYPE,
+        p_classificacao ESTRELA.CLASSIFICACAO%TYPE,
+        p_massa ESTRELA.MASSA%TYPE,
+        p_x ESTRELA.X%TYPE,
+        p_y ESTRELA.Y%TYPE,
+        p_z ESTRELA.Z%TYPE
+    ) AS
         e_estrela_nao_existe EXCEPTION;
         e_atualizar_para_null EXCEPTION;
         PRAGMA EXCEPTION_INIT(e_atualizar_para_null, -1407);
     BEGIN
         UPDATE ESTRELA
-        SET NOME = p_estrela.NOME,
-            CLASSIFICACAO = p_estrela.CLASSIFICACAO,
-            MASSA = p_estrela.MASSA,
-            X = p_estrela.X, 
-            Y = p_estrela.Y,
-            Z = p_estrela.Z
-        WHERE ID_ESTRELA = p_estrela.ID_ESTRELA;
+        SET NOME = p_nome,
+            CLASSIFICACAO = p_classificacao,
+            MASSA = p_massa,
+            X = p_x, 
+            Y = p_y,
+            Z = p_z
+        WHERE ID_ESTRELA = p_id_estrela;
         
         IF SQL%ROWCOUNT = 0 THEN
             RAISE e_estrela_nao_existe;
