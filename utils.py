@@ -21,3 +21,10 @@ def ajustar_mensagem_log(mensagem:str):
         return mensagem[:TAM_MAX]
     else:
         return mensagem
+
+def converter_para_float(string:str):
+    try:
+        return float(string);
+    except ValueError:
+        print(f"Erro ao converter '{string}' para float")
+        return None

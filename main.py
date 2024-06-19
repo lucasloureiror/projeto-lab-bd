@@ -248,22 +248,22 @@ async def acoes(acao: int, request: Request):
          {"id": "massa_estrela", 
          "name": "Massa da estrela", 
          "description": "Massa da estrela", 
-         "value": 0},
+         "value": ""},
 
          {"id": "x_estrela", 
          "name": "Posição X da estrela", 
          "description": "Posição X da estrela", 
-         "value": 0},
+         "value": ""},
 
          {"id": "y_estrela", 
          "name": "Posição Y da estrela", 
          "description": "Posição Y da estrela", 
-         "value": 0},
+         "value": ""},
 
          {"id": "z_estrela", 
          "name": "Posição Z da estrela", 
          "description": "Posição Z da estrela", 
-         "value": 0},
+         "value": ""},
          
     ]
         acao = "atualizar estrela"
@@ -326,10 +326,10 @@ async def processar_acao(request: Request, acao: str):
             id = form_dict["id_estrela"],
             nome = form_dict["nome_estrela"],
             classificacao = form_dict["classificacao_estrela"],
-            massa = float(form_dict["massa_estrela"]),
-            x = float(form_dict["x_estrela"]),
-            y = float(form_dict["y_estrela"]),
-            z = float(form_dict["z_estrela"])
+            massa = utils.converter_para_float(form_dict["massa_estrela"]),
+            x = utils.converter_para_float(form_dict["x_estrela"]),
+            y = utils.converter_para_float(form_dict["y_estrela"]),
+            z = utils.converter_para_float(form_dict["z_estrela"])
         )
         result = repository.funcionalidades.cientista.criar_estrela(Estrela, usuario)
 
@@ -338,11 +338,12 @@ async def processar_acao(request: Request, acao: str):
             id = form_dict["id_estrela"],
             nome = form_dict["nome_estrela"],
             classificacao = form_dict["classificacao_estrela"],
-            massa = float(form_dict["massa_estrela"]),
-            x = float(form_dict["x_estrela"]),
-            y = float(form_dict["y_estrela"]),
-            z = float(form_dict["z_estrela"])
+            massa = utils.converter_para_float(form_dict["massa_estrela"]),
+            x = utils.converter_para_float(form_dict["x_estrela"]),
+            y = utils.converter_para_float(form_dict["y_estrela"]),
+            z = utils.converter_para_float(form_dict["z_estrela"])
         )
+        print(f"massa: {Estrela.massa}")
         result = repository.funcionalidades.cientista.atualizar_estrela(Estrela, usuario)
         
     elif acao == "buscar estrela por id":
