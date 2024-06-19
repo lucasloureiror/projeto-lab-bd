@@ -85,7 +85,11 @@ CREATE OR REPLACE PACKAGE BODY Relatorios_Comandante AS
    FUNCTION Gerar_Relatorio_Potencial_Expansao(lider_logado IN lider.CPI%TYPE, distancia_maxima NUMBER) 
     RETURN Potencial_Expansao_Cursor IS
         v_cursor Potencial_Expansao_Cursor;
+        p_nacao Nacao.Nome%TYPE;
     BEGIN
+        SELECT L.Nacao INTO p_nacao FROM
+        Lider L WHERE L.CPI = lider_logado;
+
         OPEN v_cursor FOR
             SELECT 
                 pl.id_astro AS planeta,
@@ -104,8 +108,8 @@ CREATE OR REPLACE PACKAGE BODY Relatorios_Comandante AS
                 FROM orbita_planeta op2
                 JOIN estrela est2 ON op2.estrela = est2.id_estrela
                 JOIN dominancia dom ON dom.planeta = op2.planeta
-                WHERE dom.nacao = 'Uniao Terraquea' --p_nacao
-                AND CALC_DISTANCIA_EUCLIDIANA(est2.x, est2.y, est2.z, est.x, est.y, est.z) <= 10000000 --p_max_distancia
+                WHERE dom.nacao = p_nacao
+                AND CALC_DISTANCIA_EUCLIDIANA(est2.x, est2.y, est2.z, est.x, est.y, est.z) <= distancia_maxima
             );
         RETURN v_cursor;
     END Gerar_Relatorio_Potencial_Expansao;
