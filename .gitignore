@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 oracle_config.py
+*.local
 
 # C extensions
 *.so
