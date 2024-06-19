@@ -374,6 +374,7 @@ async def relatorios(relatorio: int, request: Request):
     show_next = False
     show_previous = False
     titulo_relatorio = ""
+    relatorios = []
 
     #RELATÓRIOS LÍDER DA FACÇÃO
     if relatorio == 1:
