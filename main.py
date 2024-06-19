@@ -10,7 +10,10 @@ import models
 from models import Usuario
 import repository.connection
 import repository.funcionalidades.lider_faccao, repository.funcionalidades.cientista, repository.funcionalidades.comandante
+import repository.relatorios.cientista
+import repository.relatorios.comandante
 import repository.relatorios.lider_faccao
+import repository.relatorios.oficial
 
 app = FastAPI()
 
@@ -368,10 +371,67 @@ async def selecionar_relatorio(request: Request):
 @app.get("/relatorios/{relatorio}")
 async def relatorios(relatorio: int, request: Request):
 
+    show_next = False
+    show_previous = False
+    titulo_relatorio = ""
+
+    #RELATÓRIOS LÍDER DA FACÇÃO
     if relatorio == 1:
-        relatorios = repository.relatorios.lider_faccao.get_relatorio_lider
+        relatorios, titulo_relatorio = repository.relatorios.lider_faccao.get_relatorio_lider(usuario)
+
+    #RELATÓRIOS DO OFICIAL
+    elif relatorio == 2: #Geral
+        relatorios, titulo_relatorio  = repository.relatorios.oficial.get_relatorio_habitantes_geral(usuario)
+        show_next = True
+
+    elif relatorio == 3: #Facção
+        relatorios, titulo_relatorio  = repository.relatorios.oficial.get_relatorio_habitantes_faccao(usuario)
+        show_previous = True
+        show_next = True
+
+    elif relatorio == 4: #Sistema
+        relatorios, titulo_relatorio  = repository.relatorios.oficial.get_relatorio_habitantes_sistemas(usuario)
+        show_previous = True
+        show_next = True
+
+    elif relatorio == 5: #Planeta
+        relatorios, titulo_relatorio  = repository.relatorios.oficial.get_relatorio_habitantes_planetas(usuario)
+        show_previous = True
+        show_next = True
+    
+    elif relatorio == 6: #Espécie 
+        relatorios, titulo_relatorio  = repository.relatorios.oficial.get_relatorio_habitantes_especies(usuario)
+        show_previous = True
+
+    #RELATÓRIOS COMANDANTE
+    elif relatorio == 7:
+        relatorios, titulo_relatorio  = repository.relatorios.comandante.get_relatorio_dominacao(usuario)
+
+    elif relatorio == 8:
+        relatorios, titulo_relatorio  = repository.relatorios.comandante.get_relatorio_potencial_expansao(usuario, 100000)
+    
+    elif relatorio == 9:
+        relatorios, titulo_relatorio  = repository.relatorios.cientista.get_relatorio_estrela()
+        show_next = True
+    
+    elif relatorio == 10:
+        relatorios, titulo_relatorio  = repository.relatorios.cientista.get_relatorio_planeta()
+        show_previous = True
+        show_next = True
+
+    elif relatorio == 11:
+        relatorios, titulo_relatorio  = repository.relatorios.cientista.get_relatorio_sistema()
+        show_previous = True
 
 
 
-    return templates.TemplateResponse("relatorios_resultado.html", {"request" : request, "relatorios": relatorios, "usuario": usuario})
+    return templates.TemplateResponse("relatorios_resultado.html", {
+        "request" : request, 
+        "relatorios": relatorios, 
+        "usuario": usuario, 
+        "relatorio": relatorio,
+        "show_next": show_next,
+        "show_previous": show_previous,
+        "titulo_relatorio": titulo_relatorio
+        })
 
