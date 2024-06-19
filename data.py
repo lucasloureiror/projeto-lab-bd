@@ -19,21 +19,21 @@ RELATORIOS = {
 # Dicionário global para ações
 ACOES = {
     "LIDER": {
-        "Alterar o nome da própria facção": 1,
-        "Indicar novo lider da própria facção": 2,
-        "Credenciar nova comunidade na própria facção": 3,
-        "Remover uma facção de uma nação": 4
+        "Alterar o nome da sua facção": 1,
+        "Indicar um novo líder para sua facção": 2,
+        "Credenciar uma nova comunidade na sua facção": 3,
+        "Remover uma facção de nação": 4
     },
     "COMANDANTE": {
-        "Incluir a própria nação em uma federação": 5,
-        "Excluir a própria nação de uma federação": 6,
-        "Criar uma nova federação com a própria nação": 7,
+        "Incluir sua nação em uma federação": 5,
+        "Excluir sua nação de uma federação": 6,
+        "Criar uma nova federação com sua própria nação": 7,
         "Inserir uma nova dominância em um planeta": 8
     },
     "CIENTISTA": {
-        "Cadastrar estrela": 9,
-        "Buscar estrela por ID": 10,
-        "Atualizar estrela": 11,
-        "Remover estrela por ID": 12
+        "Cadastrar uma estrela": 9,
+        "Buscar uma estrela por ID": 10,
+        "Atualizar uma estrela por ID": 11,
+        "Remover uma estrela por ID": 12
     }
 }

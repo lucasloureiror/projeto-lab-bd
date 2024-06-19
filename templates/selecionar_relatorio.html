@@ -30,7 +30,7 @@
                         {% for nome, id in relatorios.items() %}
                             <div class="card">
                                 <h3>{{ nome }}</h3>
-                                <p>Descrição do relatório {{ nome }}</p>
+                                <p>{{ cargo }}</p>
                                 <a href="{{ url_for('relatorios', relatorio=id) }}" class="btn">Acessar Relatório</a>
                             </div>
                         {% endfor %}

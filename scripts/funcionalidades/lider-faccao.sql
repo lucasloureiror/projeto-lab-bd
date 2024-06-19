@@ -25,6 +25,8 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_LIDER_FACCAO AS
     PROCEDURE alterar_nome_faccao(p_novo_nome_faccao FACCAO.NOME%TYPE, p_id_lider LIDER.CPI%TYPE) AS
         v_faccao_lider FACCAO%ROWTYPE;
         e_novo_nome_igual_atual EXCEPTION;
+        e_atualizar_para_null EXCEPTION;
+        PRAGMA EXCEPTION_INIT(e_atualizar_para_null, -1407);
     BEGIN
         v_faccao_lider := BUSCAR_PROPRIA_FACCAO(p_id_lider);
         
@@ -37,7 +39,10 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_LIDER_FACCAO AS
         WHERE NOME = v_faccao_lider.NOME;
         
         EXCEPTION
-            WHEN e_novo_nome_igual_atual THEN RAISE_APPLICATION_ERROR(-20005, 'O novo nome da faccao deve ser diferente do nome atual.');
+            WHEN e_atualizar_para_null THEN
+                RAISE_APPLICATION_ERROR(-20004, 'O atributo "NOME" nao pode ser nulo.');
+            WHEN e_novo_nome_igual_atual THEN
+                RAISE_APPLICATION_ERROR(-20005, 'O novo nome da faccao deve ser diferente do nome atual.');
     END alterar_nome_faccao;
     
     /* Procedimento publico: Indicar um novo lider para a propria faccao (deve perder acesso as funcionalidades) */

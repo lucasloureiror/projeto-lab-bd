@@ -14,7 +14,7 @@ CREATE OR REPLACE PACKAGE PAC_FUNC_CIENTISTA AS
         p_z ESTRELA.Z%TYPE
     );
     FUNCTION buscar_estrela(p_id_estrela ESTRELA.ID_ESTRELA%TYPE) RETURN ESTRELA%ROWTYPE;
-    PROCEDURE atualizar_estrela(
+    FUNCTION atualizar_estrela(
         p_id_estrela ESTRELA.ID_ESTRELA%TYPE,
         p_nome ESTRELA.NOME%TYPE,
         p_classificacao ESTRELA.CLASSIFICACAO%TYPE,
@@ -22,7 +22,7 @@ CREATE OR REPLACE PACKAGE PAC_FUNC_CIENTISTA AS
         p_x ESTRELA.X%TYPE,
         p_y ESTRELA.Y%TYPE,
         p_z ESTRELA.Z%TYPE
-    );
+    ) RETURN ESTRELA%ROWTYPE;
     PROCEDURE remover_estrela(p_id_estrela ESTRELA.ID_ESTRELA%TYPE);
 
 END PAC_FUNC_CIENTISTA;
@@ -31,6 +31,7 @@ END PAC_FUNC_CIENTISTA;
 CREATE OR REPLACE PACKAGE BODY PAC_FUNC_CIENTISTA AS
     /* Declaracao de funcoes/procedimentos privados */
     FUNCTION coordenadas_ja_existem(p_x ESTRELA.X%TYPE, p_y ESTRELA.Y%TYPE, p_z ESTRELA.Z%TYPE) RETURN BOOLEAN;
+    FUNCTION verifica_campos_atualizar(p_estrela_atual ESTRELA%ROWTYPE, p_dados_fornecidos ESTRELA%ROWTYPE) RETURN ESTRELA%ROWTYPE;
 
     /* Procedimento publico: Criar uma nova estrela */
     PROCEDURE criar_estrela(
@@ -74,7 +75,7 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_CIENTISTA AS
     END buscar_estrela;
     
     /* Procedimento publico: atualizar uma estrela existente */
-    PROCEDURE atualizar_estrela(
+    FUNCTION atualizar_estrela(
         p_id_estrela ESTRELA.ID_ESTRELA%TYPE,
         p_nome ESTRELA.NOME%TYPE,
         p_classificacao ESTRELA.CLASSIFICACAO%TYPE,
@@ -82,26 +83,36 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_CIENTISTA AS
         p_x ESTRELA.X%TYPE,
         p_y ESTRELA.Y%TYPE,
         p_z ESTRELA.Z%TYPE
-    ) AS
-        e_estrela_nao_existe EXCEPTION;
+    ) RETURN ESTRELA%ROWTYPE AS
+        v_estrela_atual ESTRELA%ROWTYPE;
+        v_estrela_atualizar ESTRELA%ROWTYPE;
+        v_dados_fornecidos ESTRELA%ROWTYPE;
         e_atualizar_para_null EXCEPTION;
         PRAGMA EXCEPTION_INIT(e_atualizar_para_null, -1407);
     BEGIN
+        v_estrela_atual := BUSCAR_ESTRELA(p_id_estrela);
+        
+        v_dados_fornecidos.NOME := p_nome;
+        v_dados_fornecidos.CLASSIFICACAO := p_classificacao;
+        v_dados_fornecidos.MASSA := p_massa;
+        v_dados_fornecidos.X := p_x;
+        v_dados_fornecidos.Y := p_y;
+        v_dados_fornecidos.Z := p_z;
+        
+        v_estrela_atualizar := VERIFICA_CAMPOS_ATUALIZAR(v_estrela_atual, v_dados_fornecidos);
+    
         UPDATE ESTRELA
-        SET NOME = p_nome,
-            CLASSIFICACAO = p_classificacao,
-            MASSA = p_massa,
-            X = p_x, 
-            Y = p_y,
-            Z = p_z
+        SET NOME = v_estrela_atualizar.NOME,
+            CLASSIFICACAO = v_estrela_atualizar.CLASSIFICACAO,
+            MASSA = v_estrela_atualizar.MASSA,
+            X = v_estrela_atualizar.X, 
+            Y = v_estrela_atualizar.Y,
+            Z = v_estrela_atualizar.Z
         WHERE ID_ESTRELA = p_id_estrela;
         
-        IF SQL%ROWCOUNT = 0 THEN
-            RAISE e_estrela_nao_existe;
-        END IF;
+        RETURN v_estrela_atualizar;
 
         EXCEPTION
-            WHEN e_estrela_nao_existe THEN RAISE_APPLICATION_ERROR(-20001, 'Estrela nao encontrada.');
             WHEN e_atualizar_para_null THEN RAISE_APPLICATION_ERROR(-20004, 'Os atributos "ID_ESTRELA", "X", "Y" e "Z" nao podem ser nulos.');
     END atualizar_estrela;
     
@@ -131,6 +142,50 @@ CREATE OR REPLACE PACKAGE BODY PAC_FUNC_CIENTISTA AS
         
         RETURN v_qtd_estrelas > 0;
     END coordenadas_ja_existem;
+    
+    /* Função privada: Verifica quais campos da estrela devem ser atualizados */
+    FUNCTION verifica_campos_atualizar(p_estrela_atual ESTRELA%ROWTYPE, p_dados_fornecidos ESTRELA%ROWTYPE)
+    RETURN ESTRELA%ROWTYPE IS
+        v_estrela_atualizar ESTRELA%ROWTYPE;
+    BEGIN
+        IF p_dados_fornecidos.NOME IS NULL THEN
+            v_estrela_atualizar.NOME := p_estrela_atual.NOME;
+        ELSE
+            v_estrela_atualizar.NOME := p_dados_fornecidos.NOME; 
+        END IF;
+        
+        IF p_dados_fornecidos.CLASSIFICACAO IS NULL THEN
+            v_estrela_atualizar.CLASSIFICACAO := p_estrela_atual.CLASSIFICACAO;
+        ELSE
+            v_estrela_atualizar.CLASSIFICACAO := p_dados_fornecidos.CLASSIFICACAO; 
+        END IF;
+        
+        IF p_dados_fornecidos.MASSA IS NULL THEN
+            v_estrela_atualizar.MASSA := p_estrela_atual.MASSA;
+        ELSE
+            v_estrela_atualizar.MASSA := p_dados_fornecidos.MASSA; 
+        END IF;
+        
+        IF p_dados_fornecidos.X IS NULL THEN
+            v_estrela_atualizar.X := p_estrela_atual.X;
+        ELSE
+            v_estrela_atualizar.X := p_dados_fornecidos.X; 
+        END IF;
+        
+        IF p_dados_fornecidos.Y IS NULL THEN
+            v_estrela_atualizar.Y := p_estrela_atual.Y;
+        ELSE
+            v_estrela_atualizar.Y := p_dados_fornecidos.Y; 
+        END IF;
+        
+        IF p_dados_fornecidos.Z IS NULL THEN
+            v_estrela_atualizar.Z := p_estrela_atual.Z;
+        ELSE
+            v_estrela_atualizar.Z := p_dados_fornecidos.Z; 
+        END IF;
+        
+        RETURN v_estrela_atualizar;
+    END verifica_campos_atualizar;
 
 END PAC_FUNC_CIENTISTA;
 /

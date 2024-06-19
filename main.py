@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.responses import RedirectResponse
 from starlette.status import HTTP_303_SEE_OTHER
-import datetime
+import utils
 import data
 import models
 from models import Usuario
@@ -251,22 +251,22 @@ async def acoes(acao: int, request: Request):
          {"id": "massa_estrela", 
          "name": "Massa da estrela", 
          "description": "Massa da estrela", 
-         "value": 0},
+         "value": ""},
 
          {"id": "x_estrela", 
          "name": "Posição X da estrela", 
          "description": "Posição X da estrela", 
-         "value": 0},
+         "value": ""},
 
          {"id": "y_estrela", 
          "name": "Posição Y da estrela", 
          "description": "Posição Y da estrela", 
-         "value": 0},
+         "value": ""},
 
          {"id": "z_estrela", 
          "name": "Posição Z da estrela", 
          "description": "Posição Z da estrela", 
-         "value": 0},
+         "value": ""},
          
     ]
         acao = "atualizar estrela"
@@ -296,6 +296,9 @@ async def processar_acao(request: Request, acao: str):
     
     elif acao == "indicar novo líder":
         result = repository.funcionalidades.lider_faccao.indicar_novo_lider(form_dict["id_novo_lider"], usuario)
+        if result == True: # Remover permissões do antigo líder
+            usuario.eh_lider_faccao = False
+            result = None
 
     elif acao == "credenciar nova comunidade":
         result = repository.funcionalidades.lider_faccao.credenciar_nova_comunidade(form_dict["nome_especie"], form_dict["nome_comunidade"], usuario)
@@ -312,10 +315,12 @@ async def processar_acao(request: Request, acao: str):
         result = repository.funcionalidades.comandante.excluir_propria_nacao(form_dict["nome_federacao"], usuario)
     
     elif acao == "criar uma nova federação com sua nação":
-        result = repository.funcionalidades.comandante.criar_federacao(form_dict["nome_federacao"], datetime.date(int(form_dict["ano"]), int(form_dict["mes"]), int(form_dict["dia"])), usuario)
+        data_fund = utils.Data(form_dict["dia"], form_dict["mes"], form_dict["ano"])
+        result = repository.funcionalidades.comandante.criar_federacao(form_dict["nome_federacao"], data_fund, usuario)
     
     elif acao == "inserir uma nova dominância em um planeta":
-        result = repository.funcionalidades.comandante.inserir_dominancia(form_dict["id_planeta"], datetime.date(int(form_dict["ano"]), int(form_dict["mes"]), int(form_dict["dia"])), usuario)
+        data_ini = utils.Data(form_dict["dia"], form_dict["mes"], form_dict["ano"])
+        result = repository.funcionalidades.comandante.inserir_dominancia(form_dict["id_planeta"], data_ini, usuario)
 
 
     #FUNCIONALIDADES DE CIENTISTA
@@ -324,10 +329,10 @@ async def processar_acao(request: Request, acao: str):
             id = form_dict["id_estrela"],
             nome = form_dict["nome_estrela"],
             classificacao = form_dict["classificacao_estrela"],
-            massa = float(form_dict["massa_estrela"]),
-            x = float(form_dict["x_estrela"]),
-            y = float(form_dict["y_estrela"]),
-            z = float(form_dict["z_estrela"])
+            massa = utils.converter_para_float(form_dict["massa_estrela"]),
+            x = utils.converter_para_float(form_dict["x_estrela"]),
+            y = utils.converter_para_float(form_dict["y_estrela"]),
+            z = utils.converter_para_float(form_dict["z_estrela"])
         )
         result = repository.funcionalidades.cientista.criar_estrela(Estrela, usuario)
 
@@ -336,11 +341,12 @@ async def processar_acao(request: Request, acao: str):
             id = form_dict["id_estrela"],
             nome = form_dict["nome_estrela"],
             classificacao = form_dict["classificacao_estrela"],
-            massa = float(form_dict["massa_estrela"]),
-            x = float(form_dict["x_estrela"]),
-            y = float(form_dict["y_estrela"]),
-            z = float(form_dict["z_estrela"])
+            massa = utils.converter_para_float(form_dict["massa_estrela"]),
+            x = utils.converter_para_float(form_dict["x_estrela"]),
+            y = utils.converter_para_float(form_dict["y_estrela"]),
+            z = utils.converter_para_float(form_dict["z_estrela"])
         )
+        print(f"massa: {Estrela.massa}")
         result = repository.funcionalidades.cientista.atualizar_estrela(Estrela, usuario)
         
     elif acao == "buscar estrela por id":
